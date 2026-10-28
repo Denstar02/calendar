@@ -29,6 +29,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Календарь">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='4' y='6' width='24' height='22' rx='3' fill='%23FBFCFE' stroke='%232441A6' stroke-width='2'/%3E%3Cpath d='M4 12h24' stroke='%232441A6' stroke-width='2'/%3E%3Cpath d='M10 3v6M22 3v6' stroke='%232441A6' stroke-width='2' stroke-linecap='round'/%3E%3Cellipse cx='16' cy='20' rx='6' ry='4.4' fill='none' stroke='%23CF3135' stroke-width='1.8' transform='rotate(-10 16 20)'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -3128,10 +3129,23 @@ html[data-style="term"] .sheet { border: 3px double var(--rule-2); }
   function exportData() {
     var ev = {}; S.events.forEach(function (d, id) { ev[id] = d; });
     var data = { format: 'kp-calendar', version: 1, exportedAt: new Date().toISOString(), events: ev, settings: S.settingsRaw || null };
+    var name = 'kalendar-' + todayKey() + '.json', text = JSON.stringify(data, null, 2), file = null, canFile = false;
+    if (navigator.share && navigator.canShare && matchMedia('(pointer: coarse)').matches) {
+      try { file = new File([text], name, { type: 'application/json' }); canFile = navigator.canShare({ files: [file] }); } catch (e) { canFile = false; }
+    }
+    if (canFile) {
+      navigator.share({ files: [file] }).then(function () { toast('Копия календаря готова'); }, function (e) {
+        if (!e || e.name !== 'AbortError') downloadText(text, name);
+      });
+      return;
+    }
+    downloadText(text, name);
+  }
+  function downloadText(text, name) {
     try {
-      var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      var blob = new Blob([text], { type: 'application/json' });
       var url = URL.createObjectURL(blob), a = document.createElement('a');
-      a.href = url; a.download = 'kalendar-' + todayKey() + '.json';
+      a.href = url; a.download = name;
       document.body.appendChild(a); a.click(); a.remove();
       setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
       toast('Копия сохранена в загрузки');
