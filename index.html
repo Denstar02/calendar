@@ -264,6 +264,8 @@ a { color: var(--pen); }
 .smenu .smenu-fx[aria-checked="true"] .sw::before { background: var(--pen-ink); transform: translateX(14px); }
 /* слой эффектов поверх всего: развёртка, виньетка, полоса трекинга */
 .fx { display: none; position: fixed; inset: 0; z-index: 80; pointer-events: none; overflow: hidden; }
+/* рамка экрана и дека видеомагнитофона — показываются только темой «Видеокассета» */
+.frame, .deck, .add-t { display: none; }
 .chip svg { width: 16px; height: 16px; flex: none; }
 .navrow { grid-area: nav; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
 .nav { display: flex; align-items: center; gap: 2px; }
@@ -873,10 +875,11 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-d
 <body>
 <noscript><p class="noscript">Для работы календаря включите JavaScript в браузере.</p></noscript>
 <div class="fx" aria-hidden="true"></div>
+<div class="frame" aria-hidden="true"></div>
 <header class="top" id="top">
   <div class="top-in">
     <div class="title-block">
-      <div class="osd" id="osd" aria-hidden="true"><span class="osd-tri"></span><span class="osd-rec"></span><span class="osd-m" id="osdMode">PLAY</span><span class="osd-sp">SP</span><span class="osd-t" id="osdTime"></span></div>
+      <div class="osd" id="osd" data-m="stop" aria-hidden="true"><span class="osd-tri"></span><span class="osd-m" id="osdMode">STOP</span><span class="osd-sp">SP</span><span class="osd-t" id="osdTime"></span></div>
       <div class="tline" id="tLine" aria-hidden="true"></div>
       <h1 id="title">Календарь</h1>
       <p class="sub" id="sub"></p>
@@ -884,7 +887,7 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-d
     <div class="tools">
       <button type="button" class="sync" id="sync" data-s="wait" aria-label="Синхронизация"><span class="dot" aria-hidden="true"></span><span class="sync-l" id="syncL">Загрузка…</span></button>
       <button type="button" class="icon-btn" id="btnSearch" aria-label="Поиск и фильтр" title="Поиск и фильтр (F)"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6"/><path d="M15 15l5 5"/></svg><span class="ib-dot" id="searchDot" hidden></span></button>
-      <button type="button" class="btn btn-pen desk-only" id="btnAdd" title="Новая запись (N)" hidden><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg><span id="addLbl">Добавить</span></button>
+      <button type="button" class="btn btn-pen desk-only" id="btnAdd" title="Новая запись (N)" hidden><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg><span id="addLbl">Добавить</span><span class="add-t" id="addT" aria-hidden="true"></span></button>
       <div class="stylepick" id="stylePick">
         <button type="button" class="icon-btn" id="btnStyle" aria-haspopup="menu" aria-expanded="false" aria-controls="styleMenu" aria-label="Оформление" title="Оформление"></button>
         <div class="smenu" id="styleMenu" role="menu" aria-label="Оформление" hidden></div>
@@ -920,6 +923,17 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-d
   <button type="button" class="tb-add" id="tbAdd" aria-label="Добавить запись"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
   <button type="button" class="tb" data-view="month"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 9.5h17M8.5 3v4M15.5 3v4"/><path d="M8 13h.01M12 13h.01M16 13h.01M8 16.8h.01M12 16.8h.01M16 16.8h.01" stroke-width="2.6"/></svg><span>Месяц</span></button>
   <button type="button" class="tb" data-view="deadlines"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"><path d="M6 21V3.5"/><path d="M6 4.5h11.5l-2.6 4.2 2.6 4.3H6"/></svg><span>Сроки</span><span class="tab-dot" id="tbDot" hidden></span></button>
+</nav>
+<nav class="deck" id="deck" aria-label="Перемотка">
+  <button type="button" class="dk dk-rew" data-deck="prev" title="Назад (←)"><span class="dk-i" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.5 6v12L3 12zM21 6v12l-8.5-6z"/></svg></span><span class="dk-l" aria-hidden="true">REW</span><span class="dk-c">назад</span></button>
+  <button type="button" class="dk dk-stop" data-deck="today" title="Сегодня (T)"><span class="dk-i" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="1"/></svg></span><span class="dk-l" aria-hidden="true">STOP</span><span class="dk-c">сегодня</span></button>
+  <button type="button" class="dk dk-ff" data-deck="next" title="Вперёд (→)"><span class="dk-i" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.5 6v12L21 12zM3 6v12l8.5-6z"/></svg></span><span class="dk-l" aria-hidden="true">FF</span><span class="dk-c">вперёд</span></button>
+  <button type="button" class="dk dk-pause" data-deck="fx" aria-pressed="false" title="Остановить помехи и развёртку"><span class="dk-i" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4.2" height="14" rx="1"/><rect x="13.8" y="5" width="4.2" height="14" rx="1"/></svg></span><span class="dk-l" aria-hidden="true">PAUSE</span><span class="dk-c">помехи</span></button>
+  <button type="button" class="dk dk-rec" data-deck="add" title="Новая запись (N)"><span class="dk-i" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="7"/></svg></span><span class="dk-l" aria-hidden="true">REC</span><span class="dk-c">запись</span></button>
+  <span class="dk-sp" aria-hidden="true"></span>
+  <span class="dk-logo" aria-hidden="true">HI-FI</span>
+  <span class="dk-vu" id="dkVu" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+  <button type="button" class="dk-st" id="dkSt" data-deck="sync">MONO</button>
 </nav>
 <button type="button" class="fab" id="fab" aria-label="Добавить запись" hidden><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
 <div class="backdrop" id="backdrop" hidden></div>
@@ -1266,6 +1280,7 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-d
     Array.prototype.forEach.call($styleMenu.querySelectorAll('[data-style-pick]'), function (b) { b.setAttribute('aria-checked', String(b.getAttribute('data-style-pick') === cur)); });
     var th = curTheme();
     Array.prototype.forEach.call($styleMenu.querySelectorAll('[data-theme-pick]'), function (b) { b.setAttribute('aria-checked', String(b.getAttribute('data-theme-pick') === th)); });
+    $deck.querySelector('[data-deck="fx"]').setAttribute('aria-pressed', String(!fxOn()));
     var fb = $styleMenu.querySelector('[data-fx-pick]'), fs = $styleMenu.querySelector('.smenu-fxsep');
     if (fb) {
       fb.hidden = fs.hidden = cur === 'paper';
@@ -1532,7 +1547,8 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-d
     $filt = $('filt'), $filtT = $('filtT'), $filtEdit = $('filtEdit'), $filtClear = $('filtClear'),
     $nav = document.querySelector('.nav'), $topIn = document.querySelector('.top-in'),
     $styleBtn = $('btnStyle'), $osdTime = $('osdTime'), $osd = $('osd'), $osdMode = $('osdMode'), $styleMenu = $('styleMenu'), $stylePick = $('stylePick'), $tLine = $('tLine'),
-    $tabbar = $('tabbar'), $tbAdd = $('tbAdd'), $tbDot = $('tbDot');
+    $tabbar = $('tabbar'), $tbAdd = $('tbAdd'), $tbDot = $('tbDot'),
+    $deck = $('deck'), $addT = $('addT'), $dkVu = $('dkVu'), $dkSt = $('dkSt');
 
   function keepFocus(root, fn) {
     var ae = document.activeElement, fk = null, id = null;
@@ -1550,7 +1566,7 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-d
     renderHeader();
     renderBanners();
     var W = canWrite(), isList = S.view === 'deadlines';
-    $fab.hidden = !W; $add.hidden = !W; $tbAdd.hidden = !W;
+    $fab.hidden = !W; $add.hidden = !W; $tbAdd.hidden = !W; $deck.querySelector('[data-deck="add"]').hidden = !W;
     $fab.setAttribute('aria-label', isList ? 'Добавить срок' : 'Добавить запись');
     $tbAdd.setAttribute('aria-label', isList ? 'Добавить срок' : 'Добавить запись');
     $addLbl.textContent = isList ? 'Добавить срок' : 'Добавить';
@@ -1597,9 +1613,10 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-d
     $today.classList.toggle('is-on', onToday);
     $todayNum.textContent = String(parseKey(t).getDate());
     $osdTime.textContent = hm2(nowMin());
-    var rec = S.loaded && expand(t, t).some(isLive);
-    $osd.classList.toggle('is-rec', rec);
-    if ($osdMode.textContent !== (rec ? 'REC' : 'PLAY')) $osdMode.textContent = rec ? 'REC' : 'PLAY';
+    var todayOcc = S.loaded ? expand(t, t).filter(function (o) { return !o.ghost && !o.cancelled && !o.allDay && o.kind !== 'deadline'; }) : [];
+    var nm = nowMin(), om = todayOcc.some(isLive) ? 'play' : todayOcc.some(function (o) { return o.s > nm; }) ? 'pause' : 'stop';
+    if ($osd.getAttribute('data-m') !== om) { $osd.setAttribute('data-m', om); $osdMode.textContent = om.toUpperCase(); }
+    tickClock();
     var nd = new Date();
     $tLine.textContent = WD_S[dow(nd)].toUpperCase() + ' ' + pad(nd.getDate()) + '.' + pad(nd.getMonth() + 1) + '.' + nd.getFullYear() + '  ' + hm2(nowMin());
     Array.prototype.forEach.call($seg.querySelectorAll('button'), function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-view') === v)); });
@@ -1611,7 +1628,15 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-d
     if (L) {
       $prev.setAttribute('aria-label', L[0]); $prev.title = L[0] + ' (←)';
       $next.setAttribute('aria-label', L[1]); $next.title = L[1] + ' (→)';
+      $deck.querySelector('[data-deck="prev"]').setAttribute('aria-label', L[0]);
+      $deck.querySelector('[data-deck="next"]').setAttribute('aria-label', L[1]);
     }
+    Array.prototype.forEach.call($deck.querySelectorAll('[data-deck="prev"], [data-deck="next"], [data-deck="today"]'), function (b) { b.disabled = isList; });
+    $deck.querySelector('[data-deck="today"]').classList.toggle('is-on', onToday);
+    var pairs = (hrs || 0) / 2, cap = v === 'day' ? 6 : v === 'week' ? 24 : 90;
+    var lv = isList ? Math.min(10, st.week * 2) : Math.min(10, Math.round(pairs / cap * 10));
+    Array.prototype.forEach.call($dkVu.children, function (x, i) { x.className = i < lv ? 'on' : ''; });
+    $dkVu.title = isList ? 'Сроков на этой неделе: ' + st.week : 'Нагрузка: ' + (pairs ? fmtPairs(hrs) : 'пар нет');
     var showF = fOn && !isList;
     $topIn.classList.toggle('has-filt', showF);
     $filt.hidden = !showF;
@@ -1624,6 +1649,10 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-d
     $search.setAttribute('aria-label', fOn ? 'Поиск и фильтр (фильтр включён)' : 'Поиск и фильтр');
   }
 
+  function tickClock() {
+    var d = new Date(), t = pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+    if ($addT.textContent !== t) $addT.textContent = t;
+  }
   function bannerHTML(cls, text, action) {
     return '<div class="banner' + (cls ? ' ' + cls : '') + '"><div class="banner-in"><p>' + esc(text) + '</p>' + (action || '') + '</div></div>';
   }
@@ -1693,7 +1722,7 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-d
     var aria = (live ? 'Сейчас идёт' : 'Далее') + (o.pair ? ', ' + pairLabel(o.pair, o.span) : '') + ': ' + o.title + (o.room ? ', ' + o.room : '') + ', ' + hm(o.s) + '–' + hm(o.e) + (live ? ', до конца ' : ', начало через ') + fmtDur(left);
     var h = '<button type="button" class="now-card ' + typeCls(o) + (live ? ' is-live' : ' is-next') + '" data-open="' + esc(o.key) + '" data-fk="nc" aria-label="' + esc(aria) + '" style="--p:' + pc + '%">'
       + '<span class="nc-head"><span class="nc-dot"></span><span class="nc-st">' + (live ? 'Сейчас идёт' : 'Далее') + '</span>'
-      + '<span class="nc-rec">' + (live ? 'REC' : 'PAUSE') + '</span>'
+      + '<span class="nc-rec">' + (live ? 'PLAY' : 'PAUSE') + '</span>'
       + (o.pair ? '<span class="nc-pair">' + esc(pairLabel(o.pair, o.span)) + '</span>' : '')
       + '<span class="nc-bat"></span></span>'
       + (kick ? '<span class="nc-kick">' + esc(kick) + '</span>' : '')
@@ -1880,7 +1909,7 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-d
     h += '<div class="wg wk-body paper" style="height:' + H + 'px;--sq:' + (15 * ppm) + 'px">';
     h += '<div class="wk-axis" aria-hidden="true">';
     B.forEach(function (b, i2) {
-      if (b.s >= start && b.s < end) h += '<div class="wk-ax" style="top:' + (Math.round((b.s - start) * ppm) + 3) + 'px"><span class="n">' + (i2 + 1) + '</span><span class="t">' + hm(b.s) + '</span><span class="t te">' + hm(b.e) + '</span></div>';
+      if (b.s >= start && b.s < end) h += '<div class="wk-ax" style="top:' + (Math.round((b.s - start) * ppm) + 3) + 'px;height:' + Math.max(18, Math.round((b.e - b.s) * ppm) - 6) + 'px"><span class="n">' + (i2 + 1) + '</span><span class="t">' + hm(b.s) + '</span><span class="t te">' + hm(b.e) + '</span></div>';
     });
     var showNow = days.indexOf(today) >= 0 && now >= start && now <= end;
     if (showNow) h += '<span class="now-t" style="top:' + Math.round((now - start) * ppm) + 'px">' + hm(now) + '</span>';
@@ -3254,6 +3283,9 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-d
     else { s = 'ok'; label = 'Синхронизировано'; }
     $sync.setAttribute('data-s', s); $syncL.textContent = label; $sync.title = label + '. Настройки синхронизации';
     $sync.setAttribute('aria-label', 'Синхронизация: ' + label);
+    $dkSt.textContent = s === 'local' || s === 'err' ? 'MONO' : 'STEREO';
+    $dkSt.setAttribute('data-s', s); $dkSt.title = label + '. Настройки синхронизации';
+    $dkSt.setAttribute('aria-label', 'Синхронизация: ' + label);
   }
 
   /* ---------- навигация ---------- */
@@ -3304,6 +3336,16 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-d
     var b = e.target.closest('[data-view]');
     if (b) { setView(b.getAttribute('data-view')); return; }
     if (e.target.closest('#tbAdd')) openForm(newOpts());
+  });
+  $deck.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-deck]'); if (!b || b.disabled) return;
+    var a = b.getAttribute('data-deck');
+    if (a === 'prev') $prev.click();
+    else if (a === 'next') $next.click();
+    else if (a === 'today') $today.click();
+    else if (a === 'add') { if (canWrite()) openForm(newOpts()); }
+    else if (a === 'sync') openSettings(true);
+    else if (a === 'fx') { var on = !fxOn(); setFx(on); toast(on ? 'Помехи снова идут' : 'Помехи на паузе'); }
   });
   $set.addEventListener('click', function () { openSettings(false); });
   $search.addEventListener('click', function () { openSearch(false); });
@@ -3460,6 +3502,7 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-d
     new ResizeObserver(function () { document.documentElement.style.setProperty('--top-h', $top.offsetHeight + 'px'); }).observe($top);
   }
   setInterval(function () { if (!document.hidden) render(); }, 30000);
+  setInterval(function () { if (!document.hidden && curStyle() === 'vhs') tickClock(); }, 1000);
   document.addEventListener('visibilitychange', function () { if (!document.hidden) render(); });
   window.addEventListener('online', setSync);
   window.addEventListener('offline', setSync);
