@@ -1,0 +1,370 @@
+/* Тема «Ночной терминал»: распечатка днём, экран ночью.
+   Файл подключается в index.html и действует, только когда выбрана эта тема
+   (у страницы атрибут data-style="term"), поэтому правки здесь не задевают другие темы.
+
+   Как устроен файл:
+   1. Цвета и шрифты светлого варианта — блок html:root[data-style="term"] { … }.
+   2. Тёмный вариант записан дважды: для «Авто» при тёмной системе (@media prefers-color-scheme: dark)
+      и для явного выбора «Тёмная» ([data-theme="dark"]). Меняя тёмный цвет, меняйте его в обоих блоках.
+   3. Дальше — правила оформления: шапка, наклейки, карточка «Сейчас идёт», нижняя панель, эффект экрана (развёртка, свечение).
+   --chrome-light и --chrome-dark — цвет полосы браузера на телефоне в светлом и тёмном варианте.
+   Название темы и значок в меню оформления задаются в index.html (объект STYLES). */
+
+/* ---------- тема «Ночной терминал» ---------- */
+/* Layout: лист перфорированной распечатки. Днём — кремовая бумага с отверстиями по краям, чередующимися полосами строк, двойными рамками и двухцветной лентой (сепия и красный); ночью тот же лист светится янтарём на тёплой темноте. Выбранное — инверсией и двойной рамкой, текущая пара — мигающим курсором. */
+html:root[data-style="term"] {
+  --chrome-light: #F4ECDC;
+  --chrome-dark: #25201A;
+  --paper: #F4ECDC;
+  --paper-2: #EBE0CB;
+  --paper-3: #DFD1B6;
+  --sheet: #FAF4E8;
+  --rule: rgba(74, 52, 20, 0.12);
+  --rule-2: rgba(74, 52, 20, 0.3);
+  --band: rgba(74, 52, 20, 0.03);
+  --band-hover: rgba(138, 82, 0, 0.1);
+  --today-col: rgba(138, 82, 0, 0.05);
+  --ink: #3B2B14;
+  --ink-2: #5C4627;
+  --ink-3: #74603F;
+  --pen: #8A5200;
+  --pen-ink: #FFF7E8;
+  --pen-soft: rgba(138, 82, 0, 0.1);
+  --red: #B3341B;
+  --red-line: rgba(179, 52, 27, 0.55);
+  --red-soft: rgba(179, 52, 27, 0.08);
+  --ok: #3B6B2A;
+  --warn: #8A5200;
+  --toast-bg: #3B2B14;
+  --toast-fg: #FFF7E8;
+  --toast-act: #FFC56B;
+  --shadow: 0 0 0 1px rgba(74, 52, 20, 0.18), 0 10px 28px rgba(74, 52, 20, 0.14);
+  --backdrop: rgba(40, 28, 10, 0.3);
+  --hl-lec: linear-gradient(#8A5200, #8A5200);
+  --hl-pr: repeating-linear-gradient(45deg, #8A5200 0 3px, transparent 3px 4px);
+  --hl-sem: repeating-linear-gradient(45deg, #8A5200 0 2px, transparent 2px 4px);
+  --hl-lab: repeating-linear-gradient(45deg, #8A5200 0 1px, transparent 1px 3px);
+  --hl-con: repeating-linear-gradient(-45deg, #8A5200 0 1px, transparent 1px 4px);
+  --hl-zach: repeating-linear-gradient(-45deg, #8A5200 0 2px, transparent 2px 4px);
+  --hl-exam: linear-gradient(#B3341B, #B3341B);
+  --hl-lec-ink: #6B3F00;
+  --hl-pr-ink: #6B3F00;
+  --hl-sem-ink: #6B3F00;
+  --hl-lab-ink: #6B3F00;
+  --hl-con-ink: #6B3F00;
+  --hl-zach-ink: #6B3F00;
+  --hl-exam-ink: #B3341B;
+  --cat-dept: #6B3F00;
+  --cat-meet: #6B3F00;
+  --cat-sci: #6B3F00;
+  --cat-stud: #6B3F00;
+  --cat-pers: #6B3F00;
+  --cat-other: #74603F;
+  --glow: none;
+  --title-glow: none;
+  --live-shadow: 0 0 0 2px var(--pen);
+  --bar: rgba(138, 82, 0, 0.07);
+  --bar-solid: #EEE2C8;
+  --status-bg: var(--pen);
+  --status-ink: var(--pen-ink);
+  --status-edge: 0 0 0 0 transparent;
+  --hole: rgba(59, 43, 20, 0.16);
+  --frame: rgba(59, 43, 20, 0.62);
+  --frame-2: rgba(59, 43, 20, 0.38);
+  --scan: rgba(59, 43, 20, 0.035);
+  --scan-gap: 2px;
+  --vig: rgba(59, 43, 20, 0);
+  --glow-fx: 0 0 0.6px rgba(59, 43, 20, 0.5);
+  --title-glow-fx: 0 0 0.8px rgba(59, 43, 20, 0.6);
+  --hero-glow: none;
+  --cell-off: rgba(138, 82, 0, 0.13);
+  --font-ui: "IBM Plex Mono", "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+  --font-display: "IBM Plex Mono", "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+  --font-mono: "IBM Plex Mono", "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+  color-scheme: light;
+  scrollbar-color: #74603F #F4ECDC;
+}
+@media (prefers-color-scheme: dark) {
+  html:root[data-style="term"]:not([data-theme="light"]) {
+    --paper: #25201A;
+    --paper-2: #2E2820;
+    --paper-3: #3B3329;
+    --sheet: #2B251D;
+    --rule: rgba(235, 194, 126, 0.12);
+    --rule-2: rgba(235, 194, 126, 0.3);
+    --band: rgba(235, 194, 126, 0.035);
+    --band-hover: rgba(235, 194, 126, 0.1);
+    --today-col: rgba(235, 194, 126, 0.05);
+    --ink: #EBC27E;
+    --ink-2: #CDA66A;
+    --ink-3: #AE9061;
+    --pen: #F2B450;
+    --pen-ink: #241C10;
+    --pen-soft: rgba(242, 180, 80, 0.13);
+    --red: #F07A58;
+    --red-line: rgba(240, 122, 88, 0.55);
+    --red-soft: rgba(240, 122, 88, 0.13);
+    --ok: #F5D79E;
+    --warn: #EBC27E;
+    --toast-bg: #EBC27E;
+    --toast-fg: #241C10;
+    --toast-act: #241C10;
+    --shadow: 0 0 0 1px rgba(235, 194, 126, 0.22), 0 12px 32px rgba(0, 0, 0, 0.35);
+    --backdrop: rgba(15, 12, 8, 0.55);
+    --hl-lec: linear-gradient(#E0AE5E, #E0AE5E);
+    --hl-pr: repeating-linear-gradient(45deg, #E0AE5E 0 3px, transparent 3px 4px);
+    --hl-sem: repeating-linear-gradient(45deg, #E0AE5E 0 2px, transparent 2px 4px);
+    --hl-lab: repeating-linear-gradient(45deg, #E0AE5E 0 1px, transparent 1px 3px);
+    --hl-con: repeating-linear-gradient(-45deg, #E0AE5E 0 1px, transparent 1px 4px);
+    --hl-zach: repeating-linear-gradient(-45deg, #E0AE5E 0 2px, transparent 2px 4px);
+    --hl-exam: linear-gradient(#F07A58, #F07A58);
+    --hl-lec-ink: #EBC27E;
+    --hl-pr-ink: #EBC27E;
+    --hl-sem-ink: #EBC27E;
+    --hl-lab-ink: #EBC27E;
+    --hl-con-ink: #EBC27E;
+    --hl-zach-ink: #EBC27E;
+    --hl-exam-ink: #F07A58;
+    --cat-dept: #EBC27E;
+    --cat-meet: #EBC27E;
+    --cat-sci: #EBC27E;
+    --cat-stud: #EBC27E;
+    --cat-pers: #EBC27E;
+    --cat-other: #CDA66A;
+    --title-glow: 0 0 6px rgba(235, 180, 90, 0.4);
+    --live-shadow: 0 0 0 1px var(--pen), 0 0 14px rgba(242, 180, 80, 0.28);
+    --bar: rgba(235, 194, 126, 0.045);
+    --bar-solid: #2A241D;
+    --status-bg: #322B22;
+    --status-ink: #EBC27E;
+    --status-edge: inset 0 0 0 1px rgba(242, 180, 80, 0.55), inset 4px 0 0 #F2B450;
+    --hole: rgba(0, 0, 0, 0.32);
+    --frame: rgba(235, 194, 126, 0.5);
+    --frame-2: rgba(235, 194, 126, 0.3);
+    --scan: rgba(0, 0, 0, 0.2);
+    --scan-gap: 3px;
+    --vig: rgba(0, 0, 0, 0.55);
+    --glow-fx: 0 0 2px rgba(242, 180, 80, 0.3);
+    --title-glow-fx: 0 0 8px rgba(255, 170, 60, 0.55);
+    --hero-glow: 0 0 18px rgba(255, 170, 60, 0.12), inset 0 0 26px rgba(255, 170, 60, 0.07);
+    --cell-off: rgba(242, 182, 90, 0.14);
+    color-scheme: dark;
+    scrollbar-color: #A88A5C #25201A;
+  }
+}
+html:root[data-style="term"][data-theme="dark"] {
+  --paper: #25201A;
+  --paper-2: #2E2820;
+  --paper-3: #3B3329;
+  --sheet: #2B251D;
+  --rule: rgba(235, 194, 126, 0.12);
+  --rule-2: rgba(235, 194, 126, 0.3);
+  --band: rgba(235, 194, 126, 0.035);
+  --band-hover: rgba(235, 194, 126, 0.1);
+  --today-col: rgba(235, 194, 126, 0.05);
+  --ink: #EBC27E;
+  --ink-2: #CDA66A;
+  --ink-3: #AE9061;
+  --pen: #F2B450;
+  --pen-ink: #241C10;
+  --pen-soft: rgba(242, 180, 80, 0.13);
+  --red: #F07A58;
+  --red-line: rgba(240, 122, 88, 0.55);
+  --red-soft: rgba(240, 122, 88, 0.13);
+  --ok: #F5D79E;
+  --warn: #EBC27E;
+  --toast-bg: #EBC27E;
+  --toast-fg: #241C10;
+  --toast-act: #241C10;
+  --shadow: 0 0 0 1px rgba(235, 194, 126, 0.22), 0 12px 32px rgba(0, 0, 0, 0.35);
+  --backdrop: rgba(15, 12, 8, 0.55);
+  --hl-lec: linear-gradient(#E0AE5E, #E0AE5E);
+  --hl-pr: repeating-linear-gradient(45deg, #E0AE5E 0 3px, transparent 3px 4px);
+  --hl-sem: repeating-linear-gradient(45deg, #E0AE5E 0 2px, transparent 2px 4px);
+  --hl-lab: repeating-linear-gradient(45deg, #E0AE5E 0 1px, transparent 1px 3px);
+  --hl-con: repeating-linear-gradient(-45deg, #E0AE5E 0 1px, transparent 1px 4px);
+  --hl-zach: repeating-linear-gradient(-45deg, #E0AE5E 0 2px, transparent 2px 4px);
+  --hl-exam: linear-gradient(#F07A58, #F07A58);
+  --hl-lec-ink: #EBC27E;
+  --hl-pr-ink: #EBC27E;
+  --hl-sem-ink: #EBC27E;
+  --hl-lab-ink: #EBC27E;
+  --hl-con-ink: #EBC27E;
+  --hl-zach-ink: #EBC27E;
+  --hl-exam-ink: #F07A58;
+  --cat-dept: #EBC27E;
+  --cat-meet: #EBC27E;
+  --cat-sci: #EBC27E;
+  --cat-stud: #EBC27E;
+  --cat-pers: #EBC27E;
+  --cat-other: #CDA66A;
+  --title-glow: 0 0 6px rgba(235, 180, 90, 0.4);
+  --live-shadow: 0 0 0 1px var(--pen), 0 0 14px rgba(242, 180, 80, 0.28);
+  --bar: rgba(235, 194, 126, 0.045);
+  --bar-solid: #2A241D;
+  --status-bg: #322B22;
+  --status-ink: #EBC27E;
+  --status-edge: inset 0 0 0 1px rgba(242, 180, 80, 0.55), inset 4px 0 0 #F2B450;
+  --hole: rgba(0, 0, 0, 0.32);
+  --frame: rgba(235, 194, 126, 0.5);
+  --frame-2: rgba(235, 194, 126, 0.3);
+  --scan: rgba(0, 0, 0, 0.2);
+  --scan-gap: 3px;
+  --vig: rgba(0, 0, 0, 0.55);
+  --glow-fx: 0 0 2px rgba(242, 180, 80, 0.3);
+  --title-glow-fx: 0 0 8px rgba(255, 170, 60, 0.55);
+  --hero-glow: 0 0 18px rgba(255, 170, 60, 0.12), inset 0 0 26px rgba(255, 170, 60, 0.07);
+  --cell-off: rgba(242, 182, 90, 0.14);
+  color-scheme: dark;
+  scrollbar-color: #A88A5C #25201A;
+}
+/* бумага: отверстия по краям листа */
+html[data-style="term"] body {
+  text-shadow: var(--glow);
+  background-image: radial-gradient(circle, var(--hole) 0 3.4px, transparent 4px), radial-gradient(circle, var(--hole) 0 3.4px, transparent 4px);
+  background-size: 16px 24px, 16px 24px;
+  background-position: left 0 top 6px, right 0 top 6px;
+  background-repeat: repeat-y;
+}
+html[data-style="term"] ::selection { background: var(--pen); color: var(--pen-ink); text-shadow: none; }
+html[data-style="term"] input, html[data-style="term"] textarea, html[data-style="term"] select { caret-color: var(--pen); }
+html[data-style="term"] .in::placeholder { color: var(--ink-3); opacity: 1; }
+html[data-style="term"] *, html[data-style="term"] *::before, html[data-style="term"] *::after { border-radius: 0 !important; }
+/* шапка задания на печать */
+html[data-style="term"] .top { border-bottom: 3px double var(--frame); }
+html[data-style="term"] .tline { display: block; margin-bottom: 4px; font-size: 12px; line-height: 1.3; letter-spacing: 0.06em; color: var(--ink-3); white-space: pre; }
+html[data-style="term"] .title-block h1 { font-size: 18px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.02em; text-shadow: var(--title-glow); }
+@media (min-width: 900px) { html[data-style="term"] .title-block h1 { font-size: 22px; } }
+@media (max-width: 599px) { html[data-style="term"] .title-block h1 { font-size: 16.5px; } }
+@media (max-width: 379px) { html[data-style="term"] .title-block h1 { font-size: 14.5px; letter-spacing: 0; } html[data-style="term"] .title-block h1::before { content: ">"; margin-right: 6px; } }
+html[data-style="term"] .sync-l { display: none; }
+html[data-style="term"] .title-block h1::before { content: "> "; color: var(--ink-3); }
+html[data-style="term"] .sh-ttl h2 { font-size: 18px; font-weight: 600; }
+html[data-style="term"] .lbl::before { content: "# "; }
+html[data-style="term"] .tag::before, html[data-style="term"] .b-tag::before, html[data-style="term"] .dc-tag::before, html[data-style="term"] .kick::before { content: "["; }
+html[data-style="term"] .tag::after, html[data-style="term"] .b-tag::after, html[data-style="term"] .dc-tag::after, html[data-style="term"] .kick::after { content: "]"; }
+html[data-style="term"] .kick { background: none; border: 0; padding: 0; color: var(--hl-ink); }
+html[data-style="term"] .kick.ink { color: var(--cat); }
+html[data-style="term"] .kick.dlm { color: var(--red); }
+html[data-style="term"] .btn { background: transparent; border-color: transparent; }
+html[data-style="term"] .btn:hover { background: var(--paper-2); }
+html[data-style="term"] .btn::before { content: "["; }
+html[data-style="term"] .btn::after { content: "]"; }
+html[data-style="term"] .btn-pen { background: var(--pen); border-color: var(--pen); color: var(--pen-ink); text-shadow: none; }
+html[data-style="term"] .btn-pen:hover { background: var(--ink); filter: none; }
+@media (max-width: 599px) { html[data-style="term"] .btn-today::before, html[data-style="term"] .btn-today::after { content: none; } }
+html[data-style="term"] .seg { background: transparent; border-color: var(--frame-2); }
+html[data-style="term"] .seg button[aria-pressed="true"], html[data-style="term"] .chip[aria-pressed="true"], html[data-style="term"] .chip-t[aria-pressed="true"] { background: var(--pen); border-color: var(--pen); color: var(--pen-ink); box-shadow: none; text-shadow: none; }
+html[data-style="term"] .chip[aria-pressed="true"] .cnt { color: var(--pen-ink); }
+html[data-style="term"] .toast, html[data-style="term"] mark, html[data-style="term"] .now-t { text-shadow: none; }
+html[data-style="term"] .toast button { text-decoration: underline; }
+html[data-style="term"] mark { background: var(--pen); color: var(--pen-ink); }
+/* сегодня — инверсия, выбранное — двойная рамка */
+html[data-style="term"] .ring { background: var(--pen); color: var(--pen-ink) !important; text-shadow: none; padding: 0 3px; }
+html[data-style="term"] .ring::after { content: none; }
+html[data-style="term"] .sd.is-sel { background: transparent; box-shadow: inset 0 0 0 1px var(--frame), inset 0 0 0 3px var(--paper), inset 0 0 0 4px var(--frame); }
+html[data-style="term"] .month.is-compact .mo-c.is-sel { background: var(--paper-3); box-shadow: inset 0 0 0 2px var(--pen), inset 0 0 0 4px var(--paper-3), inset 0 0 0 5px var(--pen); }
+html[data-style="term"] .wk-dh[aria-current="date"] { box-shadow: inset 0 -3px 0 var(--pen); }
+/* полосы строк, как на бумаге для распечаток */
+html[data-style="term"] .paper { background-image: none; }
+html[data-style="term"] .ax { background: transparent; }
+html[data-style="term"] .ax, html[data-style="term"] .wk-corner, html[data-style="term"] .wk-axis, html[data-style="term"] .mo-hw, html[data-style="term"] .mo-wk { border-right-color: var(--frame-2); }
+html[data-style="term"] .ladder { border-top: 3px double var(--frame); border-bottom: 3px double var(--frame); }
+html[data-style="term"] .row { border-bottom-color: var(--rule); }
+html[data-style="term"] .row:nth-child(even) { background: var(--bar); }
+html[data-style="term"] .wk-head { border-bottom: 3px double var(--frame); }
+html[data-style="term"] .band { background: transparent; }
+html[data-style="term"] .wk-col .band:nth-child(even) { background: var(--bar); }
+html[data-style="term"] .wk-col .band:hover { background: var(--band-hover); }
+html[data-style="term"] .month { padding: 3px; border: 3px double var(--frame); }
+html[data-style="term"] .mo-h { background: transparent; border-bottom: 3px double var(--frame); color: var(--ink-2); }
+html[data-style="term"] .mo-grid > :is(:nth-child(16n+17), :nth-child(16n+18), :nth-child(16n+19), :nth-child(16n+20), :nth-child(16n+21), :nth-child(16n+22), :nth-child(16n+23), :nth-child(16n+24)):not(.is-out):not(.is-sel):not(:hover) { background-color: var(--bar-solid); }
+/* карточки как рамки на распечатке */
+html[data-style="term"] .card.hl:not(.is-cancelled):not(.is-ghost) { background: var(--hl) 0 0 / 6px 100% no-repeat, var(--sheet); border: 1px solid var(--frame-2); padding-left: 16px; }
+html[data-style="term"] .blk.hl:not(.is-cancelled):not(.is-ghost) { background: var(--hl) 0 0 / 4px 100% no-repeat, var(--paper-2); border: 1px solid var(--frame-2); padding-left: 8px; }
+html[data-style="term"] .mo-it.hl:not(.is-cancelled) { background: var(--hl) 0 0 / 3px 100% no-repeat, transparent; padding-left: 6px; }
+html[data-style="term"] .card.ink, html[data-style="term"] .blk.ink { border-style: double; border-width: 3px; }
+html[data-style="term"] .dl, html[data-style="term"] .dlr, html[data-style="term"] .res { border-color: var(--frame-2); }
+html[data-style="term"] .is-live { box-shadow: var(--live-shadow) !important; }
+html[data-style="term"] .is-live .c-title::after, html[data-style="term"] .is-live .b-title::after { content: "\2588"; margin-left: 6px; color: var(--pen); animation: term-blink 1.06s steps(1, end) infinite; }
+@media (max-width: 599px) { html[data-style="term"] .is-live .b-title::after { content: none; } }
+/* строка состояния — инверсная полоса, как статусная строка терминала */
+html[data-style="term"] .status { --ink: var(--status-ink); --ink-2: var(--status-ink); background: var(--status-bg); color: var(--status-ink); box-shadow: var(--status-edge); text-shadow: none; }
+html[data-style="term"] .status .live { width: 9px; height: 16px; background: var(--status-ink); animation: term-blink 1.06s steps(1, end) infinite; }
+html[data-style="term"] .status .live.soft { opacity: 0.6; animation: none; }
+@keyframes term-blink { 0%, 49% { opacity: 1; } 50%, 100% { opacity: 0; } }
+html[data-style="term"] .sd-m i, html[data-style="term"] .res-mk.hl { background: var(--hl); opacity: 1; }
+html[data-style="term"] .sd-m i.ink { background: var(--cat); }
+html[data-style="term"] .dl-box { width: auto; min-width: 26px; border: 0; color: var(--ink); }
+html[data-style="term"] .dl-box svg { display: none; }
+html[data-style="term"] .dl-box::before { content: "[ ]"; white-space: pre; }
+html[data-style="term"] .is-done .dl-box::before { content: "[x]"; }
+html[data-style="term"] .is-over .dl-box { color: var(--red); }
+html[data-style="term"] .sheet { border: 3px double var(--frame); }
+html[data-style="term"] .tabbar { border-top: 3px double var(--frame); }
+html[data-style="term"] .tb[aria-pressed="true"] { background: var(--pen); color: var(--pen-ink); text-shadow: none; }
+html[data-style="term"] .tb-add { background: var(--pen); color: var(--pen-ink); box-shadow: none; outline: 1px solid var(--pen); outline-offset: 3px; }
+html[data-style="term"] .wl-h { border-bottom: 3px double var(--frame); }
+html[data-style="term"] .wl-day.is-free .wl-h { border-bottom: 1px dashed var(--frame-2); }
+html[data-style="term"] .wl-w::before { content: "["; } 
+html[data-style="term"] .wl-w::after { content: "]"; }
+
+/* ===== экран (тёмная): развёртка, свечение люминофора, виньетка; распечатка (светлая): полосы печати и растёкшиеся чернила — переключатель «Эффект экрана» ===== */
+html[data-style="term"][data-fx="on"] .fx { display: block; background: repeating-linear-gradient(to bottom, var(--scan) 0 1px, transparent 1px var(--scan-gap)), radial-gradient(ellipse 125% 95% at 50% 45%, transparent 55%, var(--vig) 100%); }
+html[data-style="term"][data-fx="on"] body { text-shadow: var(--glow-fx); }
+html[data-style="term"][data-fx="on"] .title-block h1, html[data-style="term"][data-fx="on"] .now-card .nc-title, html[data-style="term"][data-fx="on"] .nc-lc { text-shadow: var(--title-glow-fx); }
+/* строка задания: инверсная полоса над заголовком */
+html[data-style="term"] .tline { display: inline-block; padding: 0 6px; background: var(--ink); color: var(--paper); font-weight: 600; text-shadow: none; }
+/* «сейчас идёт» — окно с заголовком в рамке, большой таймер и сегментная шкала */
+html[data-style="term"] .now-card { gap: 2px; margin-top: 10px; padding: 18px 14px 12px; overflow: visible; border: 3px double var(--frame); background: var(--sheet); box-shadow: var(--hero-glow); }
+html[data-style="term"] .now-card:hover { background: var(--paper-2); box-shadow: var(--hero-glow); }
+html[data-style="term"] .now-card .nc-head { position: absolute; top: -0.8em; left: 10px; max-width: calc(100% - 20px); flex-wrap: nowrap; gap: 6px; padding: 0 6px; overflow: hidden; background: var(--paper); font-size: 13px; font-weight: 700; letter-spacing: 0.04em; color: var(--ink); white-space: nowrap; }
+html[data-style="term"] .now-card .nc-head::before { content: "\2524"; color: var(--ink-3); }
+html[data-style="term"] .now-card .nc-head::after { content: "\251C"; color: var(--ink-3); }
+html[data-style="term"] .now-card .nc-dot { display: none; }
+html[data-style="term"] .now-card .nc-pair::before { margin-right: 6px; }
+html[data-style="term"] .now-card .nc-kick { font-size: 12.5px; letter-spacing: 0.02em; color: var(--ink-2); }
+html[data-style="term"] .now-card .nc-kick::before { content: "["; }
+html[data-style="term"] .now-card .nc-kick::after { content: "]"; }
+html[data-style="term"] .now-card .nc-title { margin-top: 2px; font-size: 22px; font-weight: 700; letter-spacing: 0.02em; text-transform: uppercase; }
+html[data-style="term"] .now-card .nc-meta { margin-top: 4px; font-size: 13.5px; }
+html[data-style="term"] .now-card .nc-room { padding: 1px 7px; background: var(--pen); color: var(--pen-ink); font-weight: 700; text-shadow: none; }
+html[data-style="term"] .now-card .nc-time { font-size: 13.5px; }
+html[data-style="term"] .now-card .nc-foot { order: 1; align-items: flex-end; margin-top: 6px; }
+html[data-style="term"] .nc-left { display: flex; flex-direction: column; line-height: 1; }
+html[data-style="term"] .nc-ll { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3); }
+html[data-style="term"] .nc-lv { display: none; }
+html[data-style="term"] .nc-lc { display: block; font-size: 46px; font-weight: 700; line-height: 1; letter-spacing: -0.02em; color: var(--pen); }
+html[data-style="term"] .nc-pct { margin-bottom: 6px; font-size: 12.5px; color: var(--ink-2); }
+html[data-style="term"] .nc-pct::before { content: "ВЫПОЛНЕНО "; color: var(--ink-3); }
+html[data-style="term"] .now-card .nc-bar { order: 2; height: 17px; margin-top: 6px; overflow: hidden; border-radius: 0; background: none; box-shadow: inset 0 0 0 1px var(--frame); }
+html[data-style="term"] .now-card .nc-bar::before { content: ""; position: absolute; inset: 3px; background: repeating-linear-gradient(90deg, var(--cell-off) 0 9px, transparent 9px 12px); }
+html[data-style="term"] .now-card .nc-fill { inset: 3px auto 3px 3px; max-width: calc(100% - 6px); border-radius: 0; background: repeating-linear-gradient(90deg, var(--pen) 0 9px, transparent 9px 12px); }
+html[data-style="term"] .now-next { gap: 10px; margin-top: -6px; border: 1px dashed var(--frame-2); border-radius: 0; }
+html[data-style="term"] .nn-n { font-family: var(--font-ui); font-size: 15px; color: var(--ink-2); }
+html[data-style="term"] .nn-n::before { content: "["; }
+html[data-style="term"] .nn-n::after { content: "]"; }
+html[data-style="term"] .nn-k { font-size: 11.5px; color: var(--ink-2); }
+html[data-style="term"] .nn-k::before { content: "> "; }
+html[data-style="term"] .nn-t { font-size: 14px; font-weight: 600; text-transform: uppercase; }
+/* шапка таблицы над расписанием дня */
+html[data-style="term"] .row-h { display: grid; grid-template-columns: 78px minmax(0, 1fr); padding: 5px 0 4px; border-bottom: 1px dashed var(--frame-2); font-size: 11px; font-weight: 700; letter-spacing: 0.06em; color: var(--ink-3); }
+html[data-style="term"] .row-h > span:first-child { padding: 0 10px 0 4px; text-align: right; }
+html[data-style="term"] .row-h > span:last-child { padding: 0 8px 0 12px; }
+/* нижняя панель — функциональные клавиши */
+@media (max-width: 599px) {
+  html[data-style="term"] .tb { gap: 5px; }
+  html[data-style="term"] .tb svg { display: none; }
+  html[data-style="term"] .tb::before { padding: 1px 8px; background: var(--ink); color: var(--paper); font-size: 15px; font-weight: 700; line-height: 1.35; text-shadow: none; }
+  html[data-style="term"] .tb[data-view="day"]::before { content: "1"; }
+  html[data-style="term"] .tb[data-view="week"]::before { content: "2"; }
+  html[data-style="term"] .tb[data-view="month"]::before { content: "3"; }
+  html[data-style="term"] .tb[data-view="deadlines"]::before { content: "4"; }
+  html[data-style="term"] .tb[aria-pressed="true"]::before { background: var(--pen-ink); color: var(--pen); }
+  html[data-style="term"] .tb-add { width: 60px; height: 52px; border: 1px solid var(--pen); background: var(--sheet); color: var(--pen); box-shadow: none; outline: 0; }
+  html[data-style="term"] .tb-add svg { display: none; }
+  html[data-style="term"] .tb-add::before { content: "[+]"; font-size: 20px; font-weight: 700; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-style="term"] .is-live .c-title::after, html[data-style="term"] .is-live .b-title::after, html[data-style="term"] .status .live { animation: none; }
+}

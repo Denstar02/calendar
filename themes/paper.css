@@ -1,0 +1,329 @@
+/* Тема «Оригинальный»: тетрадь днём, школьная доска ночью.
+   Файл подключается в index.html и действует, только когда выбрана эта тема
+   (у страницы атрибут data-style="paper"), поэтому правки здесь не задевают другие темы.
+
+   Как устроен файл:
+   1. Цвета и шрифты светлого варианта — блок html:root[data-style="paper"] { … }.
+   2. Тёмный вариант записан дважды: для «Авто» при тёмной системе (@media prefers-color-scheme: dark)
+      и для явного выбора «Тёмная» ([data-theme="dark"]). Меняя тёмный цвет, меняйте его в обоих блоках.
+   3. Дальше — правила оформления: шапка, наклейки, карточка «Сейчас идёт», нижняя панель.
+   --chrome-light и --chrome-dark — цвет полосы браузера на телефоне в светлом и тёмном варианте.
+   Название темы и значок в меню оформления задаются в index.html (объект STYLES). */
+
+/* ---------- оригинальный стиль: тетрадь днём, школьная доска ночью ---------- */
+/* Layout: лист в клетку на всю страницу; дата в шапке написана синей ручкой; пары — полосы маркера; «сейчас» — жёлтый стикер на скотче; сегодня обведено красной ручкой дважды; выбранное — выделено маркером. Ночью тот же лист становится школьной доской: мел на тёмно-зелёном. */
+html:root[data-style="paper"] {
+  --paper: #FBFCFE;
+  --paper-2: #F1F4F9;
+  --paper-3: #E3E8F1;
+  --sheet: #FFFFFF;
+  --rule: rgba(46, 86, 158, 0.085);
+  --rule-2: rgba(28, 44, 86, 0.16);
+  --band: rgba(36, 65, 166, 0.04);
+  --band-hover: rgba(36, 65, 166, 0.09);
+  --today-col: rgba(36, 65, 166, 0.035);
+  --ink: #161E36;
+  --ink-2: #47516B;
+  --ink-3: #78819A;
+  --pen: #2441A6;
+  --pen-ink: #FFFFFF;
+  --pen-soft: rgba(36, 65, 166, 0.09);
+  --red: #CF3135;
+  --red-line: rgba(207, 49, 53, 0.55);
+  --red-soft: rgba(207, 49, 53, 0.08);
+  --ok: #1D7A47;
+  --warn: #B87200;
+  --toast-bg: #1B2238;
+  --toast-fg: #F4F6FB;
+  --toast-act: #A9C0FF;
+  --shadow: 0 1px 2px rgba(18, 28, 58, 0.06), 0 12px 32px rgba(18, 28, 58, 0.16);
+  --backdrop: rgba(14, 20, 38, 0.36);
+  --hl-lec: rgba(255, 204, 0, 0.34);
+  --hl-lec-ink: #7A5900;
+  --hl-pr: rgba(46, 190, 104, 0.25);
+  --hl-pr-ink: #176238;
+  --hl-sem: rgba(58, 150, 255, 0.22);
+  --hl-sem-ink: #1A5394;
+  --hl-lab: rgba(255, 80, 150, 0.22);
+  --hl-lab-ink: #9E1C5B;
+  --hl-con: rgba(255, 140, 30, 0.27);
+  --hl-con-ink: #8C4A07;
+  --hl-zach: rgba(140, 98, 255, 0.22);
+  --hl-zach-ink: #5133AE;
+  --hl-exam: rgba(238, 60, 48, 0.22);
+  --hl-exam-ink: #A2231B;
+  --cat-dept: #2441A6;
+  --cat-meet: #55607A;
+  --cat-sci: #0D7377;
+  --cat-stud: #8A3BA3;
+  --cat-pers: #9A5911;
+  --cat-other: #687083;
+  --font-display: "PT Serif", Georgia, "Times New Roman", serif;
+  --font-ui: "Golos Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --grid: rgba(46, 86, 158, 0.075);
+  --hand: "Caveat", "Segoe Print", "Bradley Hand", cursive;
+  --note: #FFF0A3;
+  --note-ink: #3A3216;
+  --note-edge: rgba(150, 120, 20, 0.24);
+  --tape: rgba(255, 255, 255, 0.6);
+  --marker: rgba(255, 207, 0, 0.38);
+  --note-ink-2: #6B5300;
+  --note-title: #2A230C;
+  --graphite: #4B5060;
+  --graphite-2: rgba(75, 80, 96, 0.45);
+  --stamp: rgba(52, 72, 178, 0.82);
+  --chrome-light: #FBFCFE;
+  --chrome-dark: #1E2C26;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  html:root[data-style="paper"]:not([data-theme="light"]) {
+    --paper: #1E2C26;
+    --paper-2: #24342D;
+    --paper-3: #2E4038;
+    --sheet: #23332B;
+    --rule: rgba(232, 240, 233, 0.06);
+    --rule-2: rgba(232, 240, 233, 0.16);
+    --band: rgba(232, 240, 233, 0.03);
+    --band-hover: rgba(169, 198, 255, 0.1);
+    --today-col: rgba(169, 198, 255, 0.05);
+    --ink: #ECF1EB;
+    --ink-2: #BCC9C0;
+    --ink-3: #93A39A;
+    --pen: #A9C6FF;
+    --pen-ink: #142036;
+    --pen-soft: rgba(169, 198, 255, 0.13);
+    --red: #FF8F80;
+    --red-line: rgba(255, 143, 128, 0.5);
+    --red-soft: rgba(255, 143, 128, 0.12);
+    --ok: #6BD497;
+    --warn: #F2B65A;
+    --toast-bg: #ECF1EB;
+    --toast-fg: #1E2C26;
+    --toast-act: #2441A6;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 14px 36px rgba(0, 0, 0, 0.5);
+    --backdrop: rgba(0, 0, 0, 0.55);
+    --hl-lec: rgba(255, 212, 70, 0.24);
+    --hl-lec-ink: #FFD65C;
+    --hl-pr: rgba(84, 218, 136, 0.21);
+    --hl-pr-ink: #7FE0A4;
+    --hl-sem: rgba(104, 170, 255, 0.23);
+    --hl-sem-ink: #9DC5FF;
+    --hl-lab: rgba(255, 112, 176, 0.22);
+    --hl-lab-ink: #FF9ACB;
+    --hl-con: rgba(255, 160, 72, 0.23);
+    --hl-con-ink: #FFB677;
+    --hl-zach: rgba(164, 134, 255, 0.24);
+    --hl-zach-ink: #C3B0FF;
+    --hl-exam: rgba(255, 104, 94, 0.24);
+    --hl-exam-ink: #FF9A90;
+    --cat-dept: #93B4FF;
+    --cat-meet: #AEB9CC;
+    --cat-sci: #5CCFCB;
+    --cat-stud: #D29AEA;
+    --cat-pers: #EFB26B;
+    --cat-other: #A2ACA6;
+    --grid: rgba(232, 240, 233, 0.045);
+    --note: rgba(255, 226, 120, 0.15);
+    --note-ink: #FFF0BF;
+    --note-edge: rgba(255, 226, 120, 0.4);
+    --tape: rgba(255, 255, 255, 0.16);
+    --marker: rgba(255, 214, 80, 0.22);
+    --note-ink-2: #FFE38A;
+    --note-title: #FFF6D8;
+    --graphite: rgba(236, 241, 235, 0.85);
+    --graphite-2: rgba(236, 241, 235, 0.35);
+    --stamp: rgba(246, 226, 122, 0.85);
+    color-scheme: dark;
+  }
+}
+html:root[data-style="paper"][data-theme="dark"] {
+  --paper: #1E2C26;
+  --paper-2: #24342D;
+  --paper-3: #2E4038;
+  --sheet: #23332B;
+  --rule: rgba(232, 240, 233, 0.06);
+  --rule-2: rgba(232, 240, 233, 0.16);
+  --band: rgba(232, 240, 233, 0.03);
+  --band-hover: rgba(169, 198, 255, 0.1);
+  --today-col: rgba(169, 198, 255, 0.05);
+  --ink: #ECF1EB;
+  --ink-2: #BCC9C0;
+  --ink-3: #93A39A;
+  --pen: #A9C6FF;
+  --pen-ink: #142036;
+  --pen-soft: rgba(169, 198, 255, 0.13);
+  --red: #FF8F80;
+  --red-line: rgba(255, 143, 128, 0.5);
+  --red-soft: rgba(255, 143, 128, 0.12);
+  --ok: #6BD497;
+  --warn: #F2B65A;
+  --toast-bg: #ECF1EB;
+  --toast-fg: #1E2C26;
+  --toast-act: #2441A6;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 14px 36px rgba(0, 0, 0, 0.5);
+  --backdrop: rgba(0, 0, 0, 0.55);
+  --hl-lec: rgba(255, 212, 70, 0.24);
+  --hl-lec-ink: #FFD65C;
+  --hl-pr: rgba(84, 218, 136, 0.21);
+  --hl-pr-ink: #7FE0A4;
+  --hl-sem: rgba(104, 170, 255, 0.23);
+  --hl-sem-ink: #9DC5FF;
+  --hl-lab: rgba(255, 112, 176, 0.22);
+  --hl-lab-ink: #FF9ACB;
+  --hl-con: rgba(255, 160, 72, 0.23);
+  --hl-con-ink: #FFB677;
+  --hl-zach: rgba(164, 134, 255, 0.24);
+  --hl-zach-ink: #C3B0FF;
+  --hl-exam: rgba(255, 104, 94, 0.24);
+  --hl-exam-ink: #FF9A90;
+  --cat-dept: #93B4FF;
+  --cat-meet: #AEB9CC;
+  --cat-sci: #5CCFCB;
+  --cat-stud: #D29AEA;
+  --cat-pers: #EFB26B;
+  --cat-other: #A2ACA6;
+  --grid: rgba(232, 240, 233, 0.045);
+  --note: rgba(255, 226, 120, 0.15);
+  --note-ink: #FFF0BF;
+  --note-edge: rgba(255, 226, 120, 0.4);
+  --tape: rgba(255, 255, 255, 0.16);
+  --marker: rgba(255, 214, 80, 0.22);
+  --note-ink-2: #FFE38A;
+  --note-title: #FFF6D8;
+  --graphite: rgba(236, 241, 235, 0.85);
+  --graphite-2: rgba(236, 241, 235, 0.35);
+  --stamp: rgba(246, 226, 122, 0.85);
+  color-scheme: dark;
+}
+/* лист в клетку на всю страницу */
+html[data-style="paper"] body { background-image: linear-gradient(to bottom, var(--grid) 1px, transparent 1px), linear-gradient(to right, var(--grid) 1px, transparent 1px); background-size: 20px 20px; }
+html[data-style="paper"] .paper, html[data-style="paper"] .ax, html[data-style="paper"] .wk-axis { background: transparent; }
+html[data-style="paper"] .main { background: none; }
+/* шапка: дата синей ручкой, поля красной линией */
+html[data-style="paper"] .top { box-shadow: 0 3px 0 -1px var(--paper), 0 4px 0 -1px var(--red-line); margin-bottom: 4px; }
+html[data-style="paper"] { --top-x: 4px; }
+html[data-style="paper"] .title-block h1 { font-family: var(--hand); font-weight: 700; font-size: 32px; line-height: 1.02; letter-spacing: 0.005em; color: var(--pen); }
+@media (min-width: 900px) { html[data-style="paper"] .title-block h1 { font-size: 38px; } }
+@media (max-width: 599px) { html[data-style="paper"] .title-block h1 { font-size: 30px; } }
+html[data-style="paper"] .sh-ttl h2 { color: var(--ink); }
+/* сегодня — обведено красной ручкой в два касания */
+html[data-style="paper"] .ring::before { content: ""; position: absolute; left: 50%; top: 50%; width: calc(100% + 12px); height: calc(100% + 9px); min-width: 28px; min-height: 30px; border: 1.2px solid var(--red); border-radius: 46% 54% 50% 50% / 55% 45% 55% 45%; transform: translate(-50%, -50%) rotate(5deg); opacity: 0.5; pointer-events: none; }
+/* выбранное — выделено маркером */
+html[data-style="paper"] .sd.is-sel { background: var(--marker); border-radius: 10px 16px 9px 14px / 14px 9px 16px 10px; }
+html[data-style="paper"] .month.is-compact .mo-c.is-sel { background: var(--marker); }
+html[data-style="paper"] .chip[aria-pressed="true"] { background: var(--marker); }
+@media (max-width: 599px) {
+  html[data-style="paper"] .tb[aria-pressed="true"] > span:not(.tab-dot) { padding: 0 4px; border-radius: 3px 6px 3px 7px; background: linear-gradient(transparent 48%, var(--marker) 48%); color: var(--ink); }
+  html[data-style="paper"] .tabbar { background: var(--paper); }
+}
+/* пары — полосы маркера, мероприятия — рамка от руки */
+html[data-style="paper"] .card.hl { border-radius: 3px 12px 4px 14px / 14px 4px 12px 3px; }
+html[data-style="paper"] .blk.hl { border-radius: 2px 7px 3px 8px / 8px 3px 7px 2px; }
+html[data-style="paper"] .mo-it.hl { border-radius: 2px 6px 2px 7px / 7px 2px 6px 2px; }
+html[data-style="paper"] .card.ink, html[data-style="paper"] .blk.ink, html[data-style="paper"] .chip-e { border-radius: 4px 10px 5px 11px / 11px 5px 10px 4px; }
+html[data-style="paper"] .card.ink { background: var(--paper); }
+/* «сейчас» — жёлтый стикер на скотче */
+html[data-style="paper"] .status { position: relative; margin-top: 6px; padding: 11px 14px; background: var(--note); color: var(--note-ink); border-radius: 2px 2px 3px 16px / 2px 2px 3px 12px; box-shadow: 0 1px 1px var(--note-edge), 0 10px 18px -10px rgba(120, 96, 0, 0.45); transform: rotate(-0.6deg); }
+@media (min-width: 600px) { html[data-style="paper"] .status { transform: rotate(-0.25deg); } }
+html[data-style="paper"] .status b { color: var(--note-ink); }
+html[data-style="paper"] .status::before { content: ""; position: absolute; top: -8px; left: 50%; width: 72px; height: 17px; margin-left: -36px; background: var(--tape); box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.035); transform: rotate(2.5deg); }
+/* мелкие пометки от руки */
+html[data-style="paper"] .slot-l { font-family: var(--hand); font-size: 19px; font-style: normal; color: var(--ink-3); }
+html[data-style="paper"] .mo-ag-h { font-family: var(--hand); font-size: 28px; font-weight: 700; line-height: 1.05; color: var(--pen); }
+html[data-style="paper"] .dl.is-over .dl-when, html[data-style="paper"] .dlr.is-over .rel { text-decoration: underline wavy var(--red); text-decoration-thickness: 1px; text-underline-offset: 4px; }
+html[data-style="paper"] .mo-h { background: transparent; color: var(--pen); }
+html[data-style="paper"] .wk-head { background: var(--paper); }
+/* неделя на телефоне: дата каждого дня — от руки, подчёркнута ручкой */
+html[data-style="paper"] .wl-h { border-bottom: 1.5px solid var(--pen); }
+html[data-style="paper"] .wl-n, html[data-style="paper"] .wl-m { font-family: var(--hand); font-weight: 700; color: var(--pen); }
+html[data-style="paper"] .wl-n { font-size: 28px; line-height: 0.9; }
+html[data-style="paper"] .wl-m { font-size: 23px; line-height: 1; }
+html[data-style="paper"] .wl-n.ring { margin: 0 8px; }
+html[data-style="paper"] .wl-day.is-today .wl-m { color: var(--red); font-weight: 700; }
+html[data-style="paper"] .wl-day.is-free .wl-h { border-bottom: 1px dashed var(--rule-2); }
+html[data-style="paper"] .wl-day.is-free .wl-n, html[data-style="paper"] .wl-day.is-free .wl-m { color: var(--ink-3); }
+html[data-style="paper"] .wl-day.is-free .wl-n { font-size: 24px; }
+html[data-style="paper"] .wl-day.is-free .wl-m { font-size: 20px; }
+
+/* ===== тетрадь на пружине: штамп чётности, стикер «сейчас», лист со скрепкой, закладки-разделители; ночью — доска в деревянной раме ===== */
+html[data-style="paper"] .top::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 22px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='22'%3E%3Cdefs%3E%3ClinearGradient id='m' x1='0' x2='1'%3E%3Cstop offset='0' stop-color='%232E3342'/%3E%3Cstop offset='.5' stop-color='%23B9BFCC'/%3E%3Cstop offset='1' stop-color='%232E3342'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle cx='13' cy='16' r='4.2' fill='%23CDD4E2'/%3E%3Crect x='10' y='0' width='6' height='18.5' rx='3' fill='url(%23m)'/%3E%3C/svg%3E") left 8px top 0 / 26px 22px repeat-x; pointer-events: none; }
+html[data-style="paper"] .top-in { padding-top: 26px; }
+@media (max-width: 599px) { html[data-style="paper"] .top-in { padding-top: 22px; } }
+html[data-style="paper"][data-mode="dark"] .top::before { content: none; }
+html[data-style="paper"][data-mode="dark"] .top-in { padding-top: 16px; }
+@media (max-width: 599px) { html[data-style="paper"][data-mode="dark"] .top-in { padding-top: 13px; } }
+/* чётность недели — штамп */
+html[data-style="paper"] .sub .par { padding: 1px 6px 0; border: 2px solid var(--stamp); border-radius: 4px; box-shadow: inset 0 0 0 1.5px var(--paper), inset 0 0 0 2.5px var(--stamp); color: var(--stamp); font-size: 10.5px; font-weight: 700; letter-spacing: 0.14em; line-height: 16px; text-transform: uppercase; transform: rotate(-5deg); }
+@media (max-width: 599px) { html[data-style="paper"] .sub { padding-block: 3px; margin-top: 0; } }
+/* «сейчас идёт» — жёлтый стикер на скотче */
+html[data-style="paper"] .now-card { gap: 2px; margin: 10px 4px 0 14px; padding: 15px 16px 14px; width: auto; overflow: visible; border-radius: 2px 2px 3px 20px / 2px 2px 3px 14px; background: var(--note); color: var(--note-ink); box-shadow: 0 1px 1px var(--note-edge), 0 14px 22px -10px rgba(120, 96, 0, 0.5); transform: rotate(-1.2deg); }
+html[data-style="paper"] .now-card:hover { box-shadow: 0 1px 1px var(--note-edge), 0 16px 24px -10px rgba(120, 96, 0, 0.55); }
+html[data-style="paper"] .now-card::before { content: ""; position: absolute; top: -10px; left: 50%; width: 80px; height: 20px; margin-left: -40px; background: var(--tape); box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.04); transform: rotate(3deg); }
+html[data-style="paper"] .now-card .nc-head { gap: 4px 6px; font-family: var(--hand); font-size: 23px; font-weight: 700; line-height: 1.05; letter-spacing: 0; text-transform: none; color: var(--note-ink-2); }
+html[data-style="paper"] .now-card .nc-dot { display: none; }
+html[data-style="paper"] .now-card .nc-st { text-transform: lowercase; }
+html[data-style="paper"] .now-card .nc-pair::before { content: "\2014"; margin-right: 6px; }
+html[data-style="paper"] .now-card.is-live .nc-pair::after { content: "!"; }
+html[data-style="paper"] .now-card .nc-title { order: 1; margin-top: 6px; font-size: 26px; color: var(--note-title); }
+html[data-style="paper"] .now-card .nc-kick { order: 2; margin-top: 2px; color: var(--note-ink-2); }
+html[data-style="paper"] .now-card .nc-meta { order: 3; gap: 6px 22px; margin-top: 10px; color: var(--note-ink-2); }
+html[data-style="paper"] .now-card .nc-room { position: relative; margin-left: 6px; padding: 1px 2px; font-size: 18px; font-weight: 700; color: var(--note-title); }
+html[data-style="paper"] .now-card .nc-room::after { content: ""; position: absolute; inset: -6px -9px; border: 2px solid var(--red); border-radius: 52% 48% 55% 45% / 48% 56% 44% 52%; transform: rotate(-4deg); pointer-events: none; }
+html[data-style="paper"] .now-card .nc-bar { order: 4; height: 10px; margin-top: 14px; overflow: visible; border-radius: 0; background: linear-gradient(90deg, var(--graphite-2) 55%, transparent 55%) 0 50% / 8px 2px repeat-x; }
+html[data-style="paper"] .now-card .nc-fill { top: 3.5px; bottom: auto; height: 3px; border-radius: 2px; background: var(--graphite); }
+html[data-style="paper"] .now-card .nc-fill::after { content: ""; position: absolute; right: -5px; top: -3.5px; width: 10px; height: 10px; border-radius: 50%; background: var(--pen); }
+html[data-style="paper"] .now-card .nc-foot { order: 5; align-items: baseline; margin-top: 6px; color: var(--note-ink-2); }
+html[data-style="paper"] .now-card .nc-left { font-family: var(--hand); font-size: 23px; font-weight: 700; line-height: 1; color: var(--pen); }
+html[data-style="paper"] .now-card .nc-lv { font-weight: 700; color: var(--pen); }
+html[data-style="paper"] .now-card .nc-pct { color: var(--note-ink-2); }
+/* «далее» — строчка ручкой */
+html[data-style="paper"] .now-next { gap: 14px; margin: 4px 0 0 14px; padding: 4px 6px; width: auto; border: 0; border-radius: 6px 12px 5px 10px; }
+html[data-style="paper"] .now-next:hover { background: var(--marker); }
+html[data-style="paper"] .nn-n { position: relative; min-width: 1.3em; font-size: 20px; text-align: center; color: var(--pen); }
+html[data-style="paper"] .nn-n::after { content: ""; position: absolute; inset: -3px -5px -1px; border: 1.5px solid var(--pen); border-radius: 50% 46% 52% 48% / 52% 48% 50% 46%; transform: rotate(-8deg); }
+html[data-style="paper"] .nn-k { font-family: var(--hand); font-size: 20px; font-weight: 700; line-height: 1; letter-spacing: 0; text-transform: lowercase; color: var(--pen); }
+html[data-style="paper"] .nn-t { font-size: 15.5px; font-weight: 600; color: var(--ink); }
+/* сроки дня — лист в линейку со скрепкой */
+html[data-style="paper"] .sec-dl { position: relative; gap: 2px; margin: 10px 6px 0 2px; padding: 14px 14px 10px; border-radius: 2px; background-color: var(--sheet); background-image: linear-gradient(to bottom, transparent 0 46px, var(--red-line) 46px 47px, transparent 47px), repeating-linear-gradient(to bottom, transparent 0 25px, var(--rule-2) 25px 26px); box-shadow: 0 1px 2px rgba(18, 28, 58, 0.1), 0 10px 18px -10px rgba(18, 28, 58, 0.35); transform: rotate(0.5deg); }
+html[data-style="paper"] .sec-dl::before { content: ""; position: absolute; top: -18px; left: 16px; width: 22px; height: 52px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 22 52'%3E%3Cpath d='M7 40V10a5 5 0 0 1 10 0v34a8 8 0 0 1-16 0V16' fill='none' stroke='%238C94A6' stroke-width='2.2' stroke-linecap='round'/%3E%3C/svg%3E") center / contain no-repeat; pointer-events: none; }
+html[data-style="paper"] .sec-dl .sec-h { padding-left: 28px; margin-bottom: 4px; }
+html[data-style="paper"] .sec-dl .lbl { font-family: var(--hand); font-size: 27px; font-weight: 700; line-height: 1; letter-spacing: 0; text-transform: none; color: var(--red); }
+html[data-style="paper"] .sec-dl .stack { gap: 0; }
+html[data-style="paper"] .sec-dl .dl { padding: 7px 2px; border: 0; border-radius: 0; background: transparent; }
+html[data-style="paper"] .sec-dl .dl + .dl { border-top: 1px dashed var(--rule-2); }
+html[data-style="paper"] .sec-dl .dl-box { border-color: var(--pen); color: var(--pen); border-width: 2px; border-radius: 3px 6px 4px 7px / 7px 4px 6px 3px; }
+html[data-style="paper"][data-mode="dark"] .sec-dl { background: transparent; box-shadow: none; transform: none; border: 2px dashed var(--graphite-2); border-radius: 6px 14px 8px 16px / 16px 8px 14px 6px; }
+html[data-style="paper"][data-mode="dark"] .sec-dl::before { content: none; }
+html[data-style="paper"][data-mode="dark"] .sec-dl .sec-h { padding-left: 0; }
+/* закладки-разделители внизу; ночью — полочка для мела */
+@media (max-width: 599px) {
+  html[data-style="paper"] .tabbar { align-items: end; gap: 3px; padding-top: 10px; background: linear-gradient(to bottom, transparent 0 9px, var(--paper) 9px); border-top: 0; }
+  html[data-style="paper"] .tb { align-self: end; min-height: 62px; padding-top: 2px; border-radius: 12px 12px 0 0; font-weight: 700; box-shadow: 0 -1px 0 rgba(18, 28, 58, 0.08); }
+  html[data-style="paper"] .tb svg { width: 26px; height: 26px; }
+  html[data-style="paper"] .tb[data-view="day"] { background: #FFE680; color: #3A3216; }
+  html[data-style="paper"] .tb[data-view="week"] { background: #CFE0FF; color: #1D2A5C; }
+  html[data-style="paper"] .tb[data-view="month"] { background: #CDEFD8; color: #14432A; }
+  html[data-style="paper"] .tb[data-view="deadlines"] { background: #FFD3DD; color: #5C1426; }
+  html[data-style="paper"] .tb[aria-pressed="true"] { min-height: 72px; box-shadow: 0 -3px 8px rgba(18, 28, 58, 0.16); }
+  html[data-style="paper"] .tb[aria-pressed="true"] > span:not(.tab-dot) { padding: 0; background: none; color: inherit; }
+  html[data-style="paper"] .tb:not([aria-pressed="true"]) { filter: saturate(0.75); }
+  html[data-style="paper"] .tb .tab-dot { top: 6px; box-shadow: 0 0 0 2px #FFD3DD; }
+  html[data-style="paper"] .tb-add { align-self: center; margin-bottom: 4px; box-shadow: 0 0 0 3px var(--paper), 0 0 0 5px rgba(36, 65, 166, 0.3), 0 8px 16px rgba(18, 28, 58, 0.22); }
+  html[data-style="paper"][data-mode="dark"] .tabbar { align-items: center; padding-top: 6px; background: linear-gradient(180deg, #8A5E36 0%, #6E4A2A 55%, #5A3B20 100%); box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.35), inset 0 2px 0 rgba(255, 220, 170, 0.25); }
+  html[data-style="paper"][data-mode="dark"] .tb, html[data-style="paper"][data-mode="dark"] .tb[aria-pressed="true"] { align-self: center; gap: 6px; min-height: 62px; background: none; color: #F3E3CC; box-shadow: none; filter: none; }
+  html[data-style="paper"][data-mode="dark"] .tb svg { display: none; }
+  html[data-style="paper"][data-mode="dark"] .tb::before { content: ""; width: 36px; height: 8px; border-radius: 3px; background: var(--chalk, #ECEDEA); opacity: 0.6; }
+  html[data-style="paper"][data-mode="dark"] .tb[data-view="week"] { --chalk: #A9C6FF; }
+  html[data-style="paper"][data-mode="dark"] .tb[data-view="month"] { --chalk: #9FE8BC; }
+  html[data-style="paper"][data-mode="dark"] .tb[data-view="deadlines"] { --chalk: #FF9EBE; }
+  html[data-style="paper"][data-mode="dark"] .tb[aria-pressed="true"] { color: #FFFFFF; }
+  html[data-style="paper"][data-mode="dark"] .tb[aria-pressed="true"]::before { width: 40px; height: 9px; background: #F6E27A; opacity: 1; box-shadow: 0 0 6px rgba(246, 226, 122, 0.6); }
+  html[data-style="paper"][data-mode="dark"] .tb .tab-dot { top: 4px; box-shadow: 0 0 0 2px #6E4A2A; }
+  html[data-style="paper"][data-mode="dark"] .tb-add { margin-bottom: 0; background: #EDF2EC; color: #1F2E28; box-shadow: 0 3px 0 #3E2914, 0 6px 12px rgba(0, 0, 0, 0.35); }
+}
+/* доска: деревянная рама по краю экрана и меловая пыль */
+html[data-style="paper"][data-mode="dark"] .fx { display: block; box-shadow: inset 0 0 0 5px #6E4A2A, inset 0 0 0 7px #4E331C, inset 0 0 22px 7px rgba(0, 0, 0, 0.38); }
+html[data-style="paper"][data-mode="dark"] body { background-image: radial-gradient(ellipse 60% 40% at 24% 22%, rgba(255, 255, 255, 0.045), transparent 70%), radial-gradient(ellipse 55% 35% at 78% 64%, rgba(255, 255, 255, 0.035), transparent 70%), linear-gradient(to bottom, var(--grid) 1px, transparent 1px), linear-gradient(to right, var(--grid) 1px, transparent 1px); background-size: 100vw 100vh, 100vw 100vh, 20px 20px, 20px 20px; background-attachment: fixed, fixed, scroll, scroll; }
+html[data-style="paper"][data-mode="dark"] .title-block h1, html[data-style="paper"][data-mode="dark"] .mo-ag-h, html[data-style="paper"][data-mode="dark"] .wl-n, html[data-style="paper"][data-mode="dark"] .wl-m { text-shadow: 0 0 1px rgba(237, 242, 236, 0.5); }
