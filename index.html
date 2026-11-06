@@ -84,6 +84,7 @@
   --cat-sci: #0D7377;
   --cat-stud: #8A3BA3;
   --cat-pers: #9A5911;
+  --cat-shop: #2E7D3A;
   --cat-other: #687083;
   --hl: var(--hl-lec);
   --hl-ink: var(--hl-lec-ink);
@@ -142,6 +143,7 @@
     --cat-sci: #5CCFCB;
     --cat-stud: #D29AEA;
     --cat-pers: #EFB26B;
+    --cat-shop: #7FD891;
     --cat-other: #A2ACA6;
     color-scheme: dark;
   }
@@ -191,6 +193,7 @@
   --cat-sci: #5CCFCB;
   --cat-stud: #D29AEA;
   --cat-pers: #EFB26B;
+  --cat-shop: #7FD891;
   --cat-other: #A2ACA6;
   color-scheme: dark;
 }
@@ -390,6 +393,7 @@ a { color: var(--pen); }
 .cat-sci { --cat: var(--cat-sci); }
 .cat-stud { --cat: var(--cat-stud); }
 .cat-pers { --cat: var(--cat-pers); }
+.cat-shop { --cat: var(--cat-shop); }
 .cat-other { --cat: var(--cat-other); }
 .dc-diss { --cat: var(--cat-sci); }
 .dc-article { --cat: var(--cat-dept); }
@@ -599,7 +603,16 @@ button.slot:hover .slot-p, button.slot:focus-visible .slot-p { opacity: 1; }
 .mo-c.is-out.has-dl::after { opacity: 0.5; }
 .mo-sum { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 1px 5px; max-width: 100%; font-family: var(--font-mono); font-size: 11.5px; font-weight: 600; line-height: 1.2; color: var(--ink-2); font-variant-numeric: tabular-nums; }
 .mo-sum b { font-weight: inherit; white-space: nowrap; }
-.mo-dot { flex: none; display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--pen); }
+.mo-dot { flex: none; display: inline-block; width: 7px; height: 7px; border-radius: 50%; clip-path: circle(50%); background: var(--cat, var(--pen)); }
+/* форма подсказывает вид, даже если цвета похожи: ■ кафедра, ◆ совещание, ▲ наука, ○ студенты, ● личное, ▬ магазин, □ другое.
+   Круглые формы обрезаются через clip-path — так они остаются круглыми и в теме, где у всего прямые углы. */
+.mo-dot.cat-dept { border-radius: 1px; clip-path: none; }
+.mo-dot.cat-meet { border-radius: 1px; clip-path: none; transform: rotate(45deg) scale(0.88); }
+.mo-dot.cat-sci { width: 9px; height: 8px; border-radius: 0; clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+.mo-dot.cat-stud { background: radial-gradient(circle closest-side, transparent 0 58%, var(--cat) 62% 100%); }
+.mo-dot.cat-shop { width: 12px; height: 6px; border-radius: 3px; clip-path: inset(0 round 3px); }
+.mo-dot.cat-other { border-radius: 1px; clip-path: none; background: transparent; box-shadow: inset 0 0 0 1.6px var(--cat); }
+.mo-dot.is-cls { background: var(--hl-ink); }
 .mo-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 16px; margin-top: 8px; font-size: 12.5px; line-height: 1.3; color: var(--ink-3); }
 .mo-legend > span { display: inline-flex; align-items: center; gap: 6px; }
 .mo-legend .mo-sum { flex-wrap: nowrap; }
@@ -701,6 +714,29 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-d
 .chip-t.is-span { background: var(--pen-soft); border-color: var(--pen); color: var(--ink); }
 .seg-full { display: flex; }
 .seg-full button { flex: 1; }
+/* несколько смен за раз: календарик с отметкой дней */
+.mdp-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 2px 0 6px; }
+.mdp-m { font-size: 15px; font-weight: 700; }
+.mdp-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; }
+.mdp-w { padding-bottom: 2px; font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-align: center; text-transform: uppercase; color: var(--ink-3); }
+.mdp-d { position: relative; min-width: 0; min-height: 42px; padding: 0 0 6px; border: 1px solid var(--rule-2); border-radius: 8px; background: var(--sheet); color: var(--ink); font-family: var(--font-mono); font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.mdp-d:hover { border-color: var(--pen); }
+.mdp-d.is-past { color: var(--ink-3); }
+.mdp-d.is-hol { color: var(--red); }
+.mdp-d.is-today { box-shadow: inset 0 0 0 2px var(--pen); }
+.mdp-d[aria-pressed="true"] { border-color: var(--pen); background: var(--pen); color: var(--pen-ink); box-shadow: none; }
+.mdp-mk { position: absolute; left: 0; right: 0; bottom: 5px; display: flex; justify-content: center; align-items: center; gap: 3px; pointer-events: none; }
+.mdp-mk i { width: 10px; height: 4px; border-radius: 2px; background: var(--cat-shop); box-shadow: 0 0 0 1.5px var(--sheet); }
+.mdp-mk b { width: 6px; height: 6px; border-radius: 50%; background: var(--red); box-shadow: 0 0 0 1.5px var(--sheet); }
+.mdp-legend { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 8px; font-size: 12.5px; color: var(--ink-3); }
+.mdp-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.mdp-legend .mdp-mk { position: static; }
+.mdp-sum { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 12px; margin-top: 8px; font-size: 14px; }
+.mdp-sum b { font-weight: 700; }
+/* что добавить: четыре кнопки, на узком экране — два ряда */
+.seg-kind { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.seg-kind button { min-width: 0; padding: 0 6px; overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 480px) { .seg-kind { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .seg-sm { align-self: flex-start; }
 .seg-sm button { min-height: 30px; padding: 0 10px; font-size: 13px; }
 .row2 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
@@ -964,6 +1000,7 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-d
     { id: 'sci', name: 'Наука' },
     { id: 'stud', name: 'Студенты' },
     { id: 'pers', name: 'Личное' },
+    { id: 'shop', name: 'Магазин' },
     { id: 'other', name: 'Другое' }
   ];
   var CT = {}; CLASS_TYPES.forEach(function (t) { CT[t.id] = t; });
@@ -1040,9 +1077,11 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-d
 
   var FIREBASE_VERSION = '10.14.1';
   var RULES = "rules_version = '2';\nservice cloud.firestore {\n  match /databases/{database}/documents {\n    match /calendars/{key}/{coll}/{doc} {\n      allow read, write: if key.size() >= 24;\n    }\n  }\n}";
-  var LS_DATA = 'kp-cal-v1', LS_SYNC = 'kp-sync-v1', LS_VIEW = 'kp-view', LS_THEME = 'kp-theme', LS_HINT = 'kp-hint-sync', LS_STYLE = 'kp-style', LS_FX = 'kp-fx';
+  var LS_DATA = 'kp-cal-v1', LS_SYNC = 'kp-sync-v1', LS_VIEW = 'kp-view', LS_THEME = 'kp-theme', LS_HINT = 'kp-hint-sync', LS_STYLE = 'kp-style', LS_FX = 'kp-fx', LS_SHOP = 'kp-shop-mig', LS_OFFLINE = 'kp-offline', LS_FSOK = 'kp-fs-synced';
 
   var ICON = {
+    prev: '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>',
+    next: '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>',
     check: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.2 4.2L19 7" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>',
     x: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
     search: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M15 15l5 5" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></svg>',
@@ -1184,7 +1223,7 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-d
     settings: null, settingsRaw: null, bells: [],
     db: null, readOnly: false, sync: null, syncErr: null, fireFail: false, noPersist: false,
     pendingSync: null, syncBusy: false, syncFormErr: '', syncCodeDraft: '', syncCfgDraft: '', howtoOpen: false,
-    loaded: false, everSynced: false, fromCache: false, pendingSnap: false, inflight: 0,
+    loaded: false, everSynced: false, fromCache: false, pendingSnap: false, inflight: 0, baseMirror: null,
     sheet: null, form: null, sdraft: null, lastEl: null, lastFk: null, sheetTok: 0,
     undo: null, toastT: 0, rq: 0, wk: null, resubTries: 0, resubPending: false, mirrorT: 0,
     unsubEv: null, unsubSet: null,
@@ -1663,6 +1702,8 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-d
     else if (S.syncErr === 'perm') h += bannerHTML('warn', 'База Firebase не пускает календарь. Проверьте правила Firestore: шаг 5 в настройках синхронизации.', '<button type="button" class="btn btn-sm" data-bn="open-sync">Открыть настройки</button>');
     else if (S.syncErr === 'err') h += bannerHTML('warn', 'Синхронизация прервалась. Обновите страницу.');
     if (S.noPersist) h += bannerHTML('warn', 'Браузер не даёт этой странице сохранять данные (например, в приватном режиме). Записи пропадут после закрытия вкладки.');
+    var shopOld = canWrite() && lsGet(LS_SHOP) !== '1' ? shopCandidates().length : 0;
+    if (shopOld) h += bannerHTML('', 'Для работы в магазине теперь есть отдельный вид «Магазин» со своим значком. Отметить им ' + shopOld + ' ' + plural(shopOld, 'запись', 'записи', 'записей') + ' с «магазином» в названии?', '<span class="btns"><button type="button" class="btn btn-sm btn-pen" data-bn="shop-mark">Отметить</button><button type="button" class="btn btn-sm" data-bn="shop-skip">Не нужно</button></span>');
     if (canWrite() && hasSamples()) h += bannerHTML('', 'Записи с пометкой «пример» показывают, как всё устроено. Уберите их, когда начнёте вносить своё.', '<button type="button" class="btn btn-sm" data-bn="clear-samples">Удалить примеры</button>');
     else if (S.db && S.db.kind === 'local' && !S.sync && !S.noPersist && lsGet(LS_HINT) !== '1') {
       h += bannerHTML('', 'Записи хранятся только в этом браузере. Чтобы календарь был одинаковым на телефоне и компьютере, включите синхронизацию.', '<span class="btns"><button type="button" class="btn btn-sm btn-pen" data-bn="open-sync">Настроить</button><button type="button" class="btn btn-sm" data-bn="hide-hint">Скрыть</button></span>');
@@ -1670,6 +1711,17 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-d
     if ($banners.getAttribute('data-h') !== h) { $banners.innerHTML = h; $banners.setAttribute('data-h', h); }
   }
 
+  function shopCandidates() {
+    var ids = [];
+    S.events.forEach(function (d, id) { if (d.kind === 'event' && d.cat !== 'shop' && !d.sample && /магазин/i.test(d.title || '')) ids.push(id); });
+    return ids;
+  }
+  function markShop() {
+    var ch = shopCandidates().map(function (id) { var d = clone(S.events.get(id)); d.cat = 'shop'; return { id: id, data: d }; });
+    lsSet(LS_SHOP, '1');
+    if (ch.length) commit(ch, 'Отмечено как «Магазин»: ' + ch.length + ' ' + plural(ch.length, 'запись', 'записи', 'записей'));
+    renderBanners();
+  }
   function flagOf(o) {
     if (o.ghost) return { t: 'перенесено на ' + fmtDMs(o.movedTo) + ' (' + WD_S[dow(parseKey(o.movedTo))].toLowerCase() + ')', c: 'pen' };
     if (o.cancelled) return { t: o.reason === 'holiday' ? 'не проводится: праздник' : 'отменено', c: 'red' };
@@ -1933,31 +1985,35 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-d
     return '<span class="mo-it ' + markCls(o) + (o.cancelled ? ' is-cancelled' : '') + '">' + (pre ? '<span class="mo-pre">' + esc(pre) + '</span>' : '') + esc(o.title) + '</span>';
   }
   function moSummary(its) {
-    var set = {}, other = false, dl = false;
+    var set = {}, cats = {}, cls = '', dl = false;
     its.forEach(function (o) {
       if (o.kind === 'deadline') { if (!o.done) dl = true; return; }
       if (o.cancelled) return;
       if (o.kind === 'class' && o.pair) { for (var p = o.pair; p < o.pair + o.span; p++) set[p] = true; }
-      else other = true;
+      else if (o.kind === 'event') cats[o.cat] = true;
+      else if (!cls) cls = o.type;
     });
+    var dots = EVENT_CATS.filter(function (c) { return cats[c.id]; }).map(function (c) { return '<i class="mo-dot cat-' + c.id + '"></i>'; });
+    if (cls) dots.push('<i class="mo-dot is-cls hl-' + cls + '"></i>');
     var runs = [];
     Object.keys(set).map(Number).sort(function (a, b) { return a - b; }).forEach(function (p) {
       var r = runs[runs.length - 1];
       if (r && p === r[1] + 1) r[1] = p; else runs.push([p, p]);
     });
     var html = runs.slice(0, 3).map(function (r) { return '<b>' + (r[0] === r[1] ? r[0] : r[0] + '–' + r[1]) + '</b>'; }).join('')
-      + (runs.length > 3 ? '<b>…</b>' : '') + (other ? '<i class="mo-dot"></i>' : '');
+      + (runs.length > 3 ? '<b>…</b>' : '') + dots.slice(0, 3).join('') + (dots.length > 3 ? '<b>+</b>' : '');
     return { html: html, dl: dl };
   }
   function moAria(k, its, hol) {
-    var cls = 0, ev = 0, dl = 0, parts = [];
+    var cls = 0, ev = 0, dl = 0, parts = [], evn = [];
     its.forEach(function (o) {
       if (o.kind === 'deadline') { if (!o.done) dl++; return; }
       if (o.cancelled) return;
-      if (o.kind === 'class') cls++; else ev++;
+      if (o.kind === 'class') cls++;
+      else { ev++; var nm = EC[o.cat].name.toLowerCase(); if (evn.indexOf(nm) < 0) evn.push(nm); }
     });
     if (cls) parts.push(cls + ' ' + plural(cls, 'занятие', 'занятия', 'занятий'));
-    if (ev) parts.push(ev + ' ' + plural(ev, 'мероприятие', 'мероприятия', 'мероприятий'));
+    if (ev) parts.push(ev + ' ' + plural(ev, 'мероприятие', 'мероприятия', 'мероприятий') + ' (' + evn.join(', ') + ')');
     if (dl) parts.push(dl + ' ' + plural(dl, 'срок', 'срока', 'сроков'));
     return fmtLong(k) + (hol ? ', ' + hol : '') + ', ' + (parts.length ? parts.join(', ') : 'записей нет');
   }
@@ -2079,7 +2135,13 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-d
       }
     }
     h += '</div></section>';
-    if (compact) h += '<p class="mo-legend" aria-hidden="true"><span><span class="mo-sum"><b>1–2</b></span>номера пар</span><span><i class="mo-dot"></i>мероприятие</span><span><i class="mo-corner"></i>срок</span></p>' + monthAgenda(S.cursor);
+    if (compact) {
+      var mk = keyOf(new Date(y, m, 1)), mEnd = keyOf(new Date(y, m + 1, 0)), seen = {};
+      occ.forEach(function (o) { if (o.kind === 'event' && !o.cancelled && o.date >= mk && o.date <= mEnd) seen[o.cat] = true; });
+      h += '<p class="mo-legend" aria-hidden="true"><span><span class="mo-sum"><b>1–2</b></span>номера пар</span>'
+        + EVENT_CATS.filter(function (c) { return seen[c.id]; }).map(function (c) { return '<span><i class="mo-dot cat-' + c.id + '"></i>' + c.name.toLowerCase() + '</span>'; }).join('')
+        + '<span><i class="mo-corner"></i>срок</span></p>' + monthAgenda(S.cursor);
+    }
     return h;
   }
 
@@ -2362,6 +2424,98 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-d
     S.form = F; S.sheet = { type: 'form' };
     showSheet(formHTML(F), F.mode === 'new' && mqFine.matches ? '#f-title' : null);
   }
+  /* новая смена в магазине — можно отметить сразу несколько дней */
+  function shopMulti(F) { return F.mode === 'new' && F.scope !== 'one' && F.kind === 'event' && F.cat === 'shop'; }
+  function shiftSpan(F) {
+    if (F.tmode === 'allday') return null;
+    if (F.tmode === 'pair') { var b1 = S.bells[F.pair - 1], b2 = S.bells[F.pair + F.span - 2]; return b1 && b2 ? [b1.s, b2.e] : null; }
+    var a = toMin(F.start), b = toMin(F.end);
+    return a != null && b != null && b > a ? [a, b] : null;
+  }
+  function monthAdd(ym, n) { var d = new Date(+ym.slice(0, 4), +ym.slice(5, 7) - 1 + n, 1); return d.getFullYear() + '-' + pad(d.getMonth() + 1); }
+  function datesText(list) {
+    var by = [], cur = null;
+    list.forEach(function (k) {
+      var d = parseKey(k), m = d.getFullYear() + '-' + d.getMonth();
+      if (!cur || cur.m !== m) { cur = { m: m, mon: d.getMonth(), days: [] }; by.push(cur); }
+      cur.days.push(d.getDate());
+    });
+    return by.map(function (g) { return g.days.join(', ') + ' ' + MON_G[g.mon]; }).join('; ');
+  }
+  function mdpGrid(F) {
+    var ym = F.pickM, y = +ym.slice(0, 4), m = +ym.slice(5, 7) - 1, first = new Date(y, m, 1), days = new Date(y, m + 1, 0).getDate();
+    var k0 = keyOf(first), k1 = keyOf(new Date(y, m, days)), t = todayKey(), span = shiftSpan(F), info = {};
+    expand(k0, k1).forEach(function (o) {
+      if (o.ghost || o.cancelled || o.kind === 'deadline') return;
+      var x = info[o.date] || (info[o.date] = { shop: false, clash: false });
+      if (o.kind === 'event' && o.cat === 'shop') { x.shop = true; return; }
+      if (span && !o.allDay && o.s < span[1] && o.e > span[0]) x.clash = true;
+    });
+    var h = WD_S.map(function (w) { return '<span class="mdp-w" aria-hidden="true">' + w + '</span>'; }).join('');
+    for (var i = 0; i < dow(first); i++) h += '<span aria-hidden="true"></span>';
+    for (var dd = 1; dd <= days; dd++) {
+      var k = keyOf(new Date(y, m, dd)), x = info[k] || {}, on = F.dates.indexOf(k) >= 0, hol = holidayName(k);
+      var lbl = fmtLong(k) + (x.shop ? ', уже есть смена' : '') + (x.clash ? ', в это время пара или мероприятие' : '') + (hol ? ', ' + hol : '');
+      h += '<button type="button" class="mdp-d' + (k < t ? ' is-past' : '') + (k === t ? ' is-today' : '') + (hol ? ' is-hol' : '') + '" data-mdd="' + k + '" data-fk="md:' + k + '" aria-pressed="' + on + '" aria-label="' + esc(lbl) + '">' + dd
+        + (x.shop || x.clash ? '<span class="mdp-mk" aria-hidden="true">' + (x.shop ? '<i></i>' : '') + (x.clash ? '<b></b>' : '') + '</span>' : '') + '</button>';
+    }
+    return h;
+  }
+  function mdpHTML(F) {
+    var E = F.errors || {}, n = F.dates.length, y = +F.pickM.slice(0, 4), m = +F.pickM.slice(5, 7) - 1;
+    return '<fieldset class="mdp"><legend>Дни смен</legend>'
+      + '<div class="mdp-head"><button type="button" class="icon-btn" data-mdp="-1" data-fk="mp:-1" aria-label="Предыдущий месяц">' + ICON.prev + '</button>'
+      + '<span class="mdp-m">' + MON_N[m] + ' ' + y + '</span>'
+      + '<button type="button" class="icon-btn" data-mdp="1" data-fk="mp:1" aria-label="Следующий месяц">' + ICON.next + '</button></div>'
+      + '<div class="mdp-grid" id="mdpGrid" role="group" aria-label="Отметьте дни смен">' + mdpGrid(F) + '</div>'
+      + '<p class="mdp-legend" aria-hidden="true"><span><span class="mdp-mk"><i></i></span>уже есть смена</span><span><span class="mdp-mk"><b></b></span>в это время пара</span></p>'
+      + '<div class="mdp-sum" aria-live="polite">' + (n ? '<span>Отмечено: <b>' + n + '</b> — ' + esc(datesText(F.dates)) + '</span><button type="button" class="btn btn-sm" data-mdp-clear data-fk="mp:clear">Снять отметки</button>' : '<span>Отметьте один или несколько дней.</span>') + '</div>'
+      + (E.date ? '<p class="err">' + esc(E.date) + '</p>' : '')
+      + '</fieldset>';
+  }
+  function refreshPicker() {
+    var g = $('mdpGrid'); if (g && S.form && shopMulti(S.form)) g.innerHTML = mdpGrid(S.form);
+  }
+  function syncSubmit() {
+    var F = S.form, b = document.querySelector('#evForm [type="submit"]'); if (!F || !b) return;
+    var n = shopMulti(F) ? F.dates.length : 1;
+    b.textContent = n > 1 ? 'Добавить ' + n + ' ' + plural(n, 'смену', 'смены', 'смен') : 'Сохранить';
+  }
+  function saveShifts(F) {
+    var ch = F.dates.map(function (k) { return { id: newId(), data: buildDoc(Object.assign({}, F, { date: k, repeat: 'none' }), null) }; });
+    closeSheet();
+    var vr = visibleRange();
+    if (F.dates[0] < vr[0] || F.dates[0] > vr[1]) S.cursor = F.dates[0];
+    commit(ch, 'Добавлено смен: ' + ch.length);
+  }
+  function lastShop() {
+    var best = null, t = todayKey();
+    S.events.forEach(function (d) {
+      if (d.kind !== 'event' || d.sample) return;
+      if (!(d.cat === 'shop' || /магазин/i.test(d.title || ''))) return;
+      var score = (d.date <= t ? '1' : '0') + (d.date <= t ? d.date : invKey(d.date));
+      if (!best || score > best.score) best = { d: d, score: score };
+    });
+    return best && best.d;
+  }
+  function invKey(k) { return k.replace(/\d/g, function (c) { return String(9 - c); }); }
+  function fillShop(F) {
+    var d = lastShop(), fill = { title: '', room: '' };
+    if (!F.title.trim()) F.title = fill.title = d && d.cat === 'shop' && d.title ? d.title : 'Магазин';
+    if (!F.room.trim() && d && typeof d.room === 'string' && d.room) F.room = fill.room = d.room;
+    var tm = d ? timeOf(d) : null;
+    if (tm && tm.allDay) F.tmode = 'allday';
+    else if (tm && tm.s != null && tm.e != null && !tm.pair) { F.tmode = 'custom'; F.start = hm2(tm.s); F.end = hm2(tm.e); }
+    else if (tm && tm.pair) { F.tmode = 'pair'; F.pair = tm.pair; F.span = tm.span; }
+    else if (F.tmode !== 'custom') { F.tmode = 'custom'; F.start = F.start || '10:00'; F.end = F.end || '19:00'; }
+    F.shopFill = fill;
+    if (!F.dates) {
+      var d0 = isKey(F.date) ? F.date : todayKey();
+      var busy = expand(d0, d0).some(function (o) { return o.kind === 'event' && o.cat === 'shop' && !o.cancelled && !o.ghost; });
+      F.dates = busy ? [] : [d0];
+      F.pickM = d0.slice(0, 7);
+    }
+  }
   function field(id, label, control, err, hint) {
     return '<div class="field"><label for="' + id + '">' + label + '</label>' + control
       + (hint != null ? '<p class="hint" id="h-' + id + '">' + hint + '</p>' : '')
@@ -2417,8 +2571,10 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-d
     var E = F.errors || {}, one = F.scope === 'one', h = '';
     if (one) h += '<p class="hint">Изменения коснутся только ' + (F.kind === 'class' ? 'занятия' : 'записи') + ' ' + esc(fmtLong(F.ok)) + '. Остальные даты серии останутся без изменений.</p>';
     if (F.mode === 'new') {
-      h += '<div class="seg seg-full" role="group" aria-label="Что добавить">' + [['class', 'Пара'], ['event', 'Мероприятие'], ['deadline', 'Срок']].map(function (x) {
-        return '<button type="button" data-kind="' + x[0] + '" data-fk="k:' + x[0] + '" aria-pressed="' + (F.kind === x[0]) + '">' + x[1] + '</button>';
+      var shop = F.kind === 'event' && F.cat === 'shop';
+      h += '<div class="seg seg-full seg-kind" role="group" aria-label="Что добавить">' + [['class', 'Пара'], ['event', 'Мероприятие'], ['shop', 'Магазин'], ['deadline', 'Срок']].map(function (x) {
+        var on = x[0] === 'shop' ? shop : x[0] === 'event' ? F.kind === 'event' && !shop : F.kind === x[0];
+        return '<button type="button" data-kind="' + x[0] + '" data-fk="k:' + x[0] + '" aria-pressed="' + on + '">' + x[1] + '</button>';
       }).join('') + '</div>';
     }
     if (!one) {
@@ -2426,7 +2582,7 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-d
         h += '<fieldset><legend>Вид занятия</legend><div class="chips">' + CLASS_TYPES.map(function (t) {
           return '<button type="button" class="chip" data-type="' + t.id + '" data-fk="t:' + t.id + '" aria-pressed="' + (F.type === t.id) + '"><span class="sw hl hl-' + t.id + '"></span>' + t.name + '</button>';
         }).join('') + '</div></fieldset>';
-      } else if (F.kind === 'event') {
+      } else if (F.kind === 'event' && !(F.mode === 'new' && F.cat === 'shop')) {
         h += '<fieldset><legend>Вид</legend><div class="chips">' + EVENT_CATS.map(function (c) {
           return '<button type="button" class="chip" data-cat="' + c.id + '" data-fk="c:' + c.id + '" aria-pressed="' + (F.cat === c.id) + '"><span class="sw ink cat-' + c.id + '"></span>' + c.name + '</button>';
         }).join('') + '</div></fieldset>';
@@ -2436,7 +2592,7 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-d
         }).join('') + '</div></fieldset>';
       }
       var tl = F.kind === 'class' ? 'Дисциплина' : F.kind === 'event' ? 'Название' : 'Что нужно сделать';
-      var ph = F.kind === 'class' ? 'Например, Педагогика' : F.kind === 'event' ? 'Например, заседание кафедры' : (DC[F.dcat] || DC.other).ph;
+      var ph = F.kind === 'class' ? 'Например, Педагогика' : F.kind === 'event' ? (F.cat === 'shop' ? 'Например, смена' : 'Например, заседание кафедры') : (DC[F.dcat] || DC.other).ph;
       var dl = F.kind === 'class' ? 'dl-disc' : F.kind === 'event' ? 'dl-evt' : '';
       h += field('f-title', tl, '<input id="f-title" class="in" type="text" autocomplete="off" maxlength="200"' + (dl ? ' list="' + dl + '"' : '') + ' placeholder="' + ph + '" value="' + esc(F.title) + '"' + (E.title ? ' aria-invalid="true"' : '') + '>', E.title);
     }
@@ -2444,13 +2600,14 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-d
       var roomF = field('f-room', 'Аудитория', '<input id="f-room" class="in" type="text" list="dl-room" autocomplete="off" maxlength="120" placeholder="ауд. 214" value="' + esc(F.room) + '">');
       h += one ? roomF : '<div class="row2">' + field('f-group', 'Группа', '<input id="f-group" class="in" type="text" list="dl-group" autocomplete="off" maxlength="80" placeholder="ПИ-22" value="' + esc(F.group) + '">') + roomF + '</div>';
     } else if (F.kind === 'event') {
-      h += field('f-room', 'Место', '<input id="f-room" class="in" type="text" list="dl-room" autocomplete="off" maxlength="120" placeholder="ауд. 210, актовый зал, онлайн" value="' + esc(F.room) + '">');
+      h += field('f-room', 'Место', '<input id="f-room" class="in" type="text" list="dl-room" autocomplete="off" maxlength="120" placeholder="' + (F.cat === 'shop' ? 'Адрес магазина' : 'ауд. 210, актовый зал, онлайн') + '" value="' + esc(F.room) + '">');
     }
     var dateLabel = !one && F.kind !== 'deadline' && F.repeat !== 'none' ? 'Первая дата' : 'Дата';
-    h += field('f-date', dateLabel, '<input id="f-date" class="in" type="date" value="' + esc(F.date) + '"' + (E.date ? ' aria-invalid="true"' : '') + '>', E.date, dateHint(F.date));
+    if (shopMulti(F)) h += mdpHTML(F);
+    else h += field('f-date', dateLabel, '<input id="f-date" class="in" type="date" value="' + esc(F.date) + '"' + (E.date ? ' aria-invalid="true"' : '') + '>', E.date, dateHint(F.date));
     if (F.kind === 'deadline') h += field('f-start', 'Срок до (время, необязательно)', '<input id="f-start" class="in" type="time" value="' + esc(F.start) + '">');
     else h += timeBlock(F);
-    if (!one && F.kind !== 'deadline') {
+    if (!one && F.kind !== 'deadline' && !(shopMulti(F) && F.dates.length > 1)) {
       var w = WN();
       var opts = [['none', 'Не повторять'], ['weekly', 'Каждую неделю'], ['odd', w.oddRep], ['even', w.evenRep]];
       h += field('f-repeat', 'Повтор', '<select id="f-repeat" class="in">' + opts.map(function (x) {
@@ -2467,6 +2624,7 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-d
     var st = body.scrollTop;
     keepFocus(body, function () { body.innerHTML = formBody(S.form); });
     body.scrollTop = st;
+    syncSubmit();
   }
   function readForm(F) {
     var map = { 'f-title': 'title', 'f-group': 'group', 'f-room': 'room', 'f-note': 'note', 'f-date': 'date', 'f-start': 'start', 'f-end': 'end', 'f-until': 'until', 'f-repeat': 'repeat' };
@@ -2476,11 +2634,24 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-d
     var F = S.form; if (!F) return;
     var ds = b.dataset;
     if (ds.kind) {
-      F.kind = ds.kind;
+      var wasShop = F.kind === 'event' && F.cat === 'shop';
+      if (ds.kind === 'shop') { F.kind = 'event'; F.cat = 'shop'; if (!wasShop) fillShop(F); }
+      else {
+        F.kind = ds.kind;
+        if (wasShop) { F.cat = 'dept'; if (F.shopFill) { if (F.title === F.shopFill.title) F.title = ''; if (F.room === F.shopFill.room) F.room = ''; F.shopFill = null; } }
+      }
       if (!F.repTouched) F.repeat = F.kind === 'class' ? 'weekly' : 'none';
       if (F.kind !== 'event' && F.tmode === 'allday') F.tmode = 'pair';
-    } else if (ds.type) F.type = ds.type;
-    else if (ds.cat) F.cat = ds.cat;
+    } else if (ds.mdd) {
+      var di = F.dates.indexOf(ds.mdd);
+      if (di >= 0) F.dates.splice(di, 1); else F.dates.push(ds.mdd);
+      F.dates.sort();
+      if (F.dates.length) F.date = F.dates[0];
+      if (F.errors) delete F.errors.date;
+    } else if (ds.mdp) F.pickM = monthAdd(F.pickM, +ds.mdp);
+    else if (b.hasAttribute('data-mdp-clear')) F.dates = [];
+    else if (ds.type) F.type = ds.type;
+    else if (ds.cat) { F.cat = ds.cat; if (F.cat === 'shop' && F.mode === 'new' && !F.dates) fillShop(F); }
     else if (ds.dcat) F.dcat = ds.dcat;
     else if (ds.pair) { F.tmode = 'pair'; F.pair = +ds.pair; F.span = clampSpan(F.pair, F.span); }
     else if (ds.span) F.span = clampSpan(F.pair, +ds.span);
@@ -2493,7 +2664,8 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-d
   function validate(F) {
     var er = {}, one = F.scope === 'one';
     if (!one && !F.title.trim()) er.title = F.kind === 'class' ? 'Укажите дисциплину' : F.kind === 'event' ? 'Укажите название' : 'Опишите, что нужно сделать';
-    if (!isKey(F.date)) er.date = 'Укажите дату';
+    if (shopMulti(F)) { if (!F.dates.length) er.date = 'Отметьте хотя бы один день'; }
+    else if (!isKey(F.date)) er.date = 'Укажите дату';
     if (F.kind !== 'deadline') {
       if (F.tmode === 'custom') {
         var s = toMin(F.start), e = toMin(F.end);
@@ -2573,6 +2745,7 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-d
       return;
     }
     if (F.scope === 'one') { saveOne(F); return; }
+    if (shopMulti(F)) { if (F.dates.length > 1) { saveShifts(F); return; } F.date = F.dates[0]; }
     var prev = F.mode === 'edit' ? S.events.get(F.id) : null;
     if (F.mode === 'edit' && !prev) { closeSheet(); toast('Запись удалили на другом устройстве.'); return; }
     var doc = buildDoc(F, prev), id = F.mode === 'edit' ? F.id : newId();
@@ -3220,6 +3393,7 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-d
     if (!S.db || S.readOnly) { toast('Сейчас изменения недоступны: нет подключения к хранилищу.'); return; }
     var prevs = changes.map(function (c) { return { id: c.id, data: S.events.has(c.id) ? clone(S.events.get(c.id)) : null }; });
     changes.forEach(function (c) { if (c.data) S.events.set(c.id, c.data); else S.events.delete(c.id); });
+    if (S.baseMirror) changes.forEach(function (c) { if (c.data) S.baseMirror.set(c.id, c.data); else S.baseMirror.delete(c.id); });
     updateDatalists(); render();
     if (msg) toast(msg, noUndo ? null : function () { commit(prevs, 'Изменение отменено', true); });
     var ps = changes.map(function (c) {
@@ -3385,6 +3559,8 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-d
     if (a === 'clear-samples') clearSamples();
     else if (a === 'open-sync') openSettings(true);
     else if (a === 'hide-hint') { lsSet(LS_HINT, '1'); renderBanners(); }
+    else if (a === 'shop-mark') markShop();
+    else if (a === 'shop-skip') { lsSet(LS_SHOP, '1'); renderBanners(); }
     else if (a === 'sync-accept' && S.pendingSync) connectSync(S.pendingSync);
     else if (a === 'sync-reject') { S.pendingSync = null; renderBanners(); }
     else if (a === 'retry' && S.sync) bootFire(S.sync, null);
@@ -3449,7 +3625,8 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-d
         F.start = t.value;
         var s = toMin(t.value);
         if (s != null && (toMin(F.end) == null || toMin(F.end) <= s)) { F.end = hm2(Math.min(s + 90, 1439)); var en = $('f-end'); if (en) en.value = F.end; }
-      }
+        refreshPicker();
+      } else if (t.id === 'f-end') { F.end = t.value; refreshPicker(); }
     } else if (t.id === 's-import') { importFile(t.files && t.files[0]); }
     else if (S.sdraft) readSettingsInput(t);
   });
@@ -3504,7 +3681,11 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-d
   setInterval(function () { if (!document.hidden) render(); }, 30000);
   setInterval(function () { if (!document.hidden && curStyle() === 'vhs') tickClock(); }, 1000);
   document.addEventListener('visibilitychange', function () { if (!document.hidden) render(); });
-  window.addEventListener('online', setSync);
+  window.addEventListener('online', function () {
+    setSync();
+    // библиотека синхронизации не загрузилась без сети — пробуем снова, как только связь появилась
+    if (S.fireFail && S.sync && !S.syncBusy) bootFire(S.sync, null);
+  });
   window.addEventListener('offline', setSync);
   window.addEventListener('storage', function (e) {
     if (e.key === LS_DATA && S.db && S.db.kind === 'local' && !S.sync) { var o = readLocal(); if (o) S.db.replace(o); }
@@ -3515,10 +3696,23 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-d
 
   /* ---------- подписка на данные ---------- */
   function onEvents(snap) {
-    var m = new Map();
+    var md = snap.metadata || {};
+    // Сервер ещё не ответил (например, календарь открыли без интернета), а кэш синхронизации в этом браузере
+    // неполный: пуст (его очистили или браузер его не хранит) или ни разу не сверялся с сервером.
+    // Тогда основа — записи, сохранённые на устройстве, а поверх них — то, что изменили сейчас.
+    // Как только ответит сервер, всё снова берётся из базы.
+    if (S.db && S.db.kind === 'fire' && S.sync) {
+      if (md.fromCache && !S.everSynced) {
+        var fsOk = lsGet(LS_FSOK) === S.sync.key;
+        if (!S.baseMirror && S.events.size && (!snap.docs.length || !fsOk)) S.baseMirror = new Map(S.events);
+      } else {
+        S.baseMirror = null;
+        if (!md.fromCache && lsGet(LS_FSOK) !== S.sync.key) lsSet(LS_FSOK, S.sync.key);
+      }
+    }
+    var m = S.baseMirror ? new Map(S.baseMirror) : new Map();
     snap.docs.forEach(function (doc) { if (!doc.exists) return; var d = doc.data(); if (validDoc(d)) m.set(doc.id, d); });
     S.events = m; S.loaded = true;
-    var md = snap.metadata || {};
     S.fromCache = !!md.fromCache; S.pendingSnap = !!md.hasPendingWrites;
     if (!S.fromCache) S.everSynced = true;
     if (S.syncErr === 'err') S.syncErr = null;
@@ -3527,6 +3721,8 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-d
     if (S.sheet && S.sheet.type === 'search') updateSearch(true);
   }
   function onSettingsSnap(snap) {
+    // то же для настроек: пустой ответ из кэша до связи с сервером не сбрасывает их
+    if (!snap.exists && snap.metadata && snap.metadata.fromCache && !S.everSynced && S.settingsRaw) return;
     S.settingsRaw = snap.exists ? snap.data() : null;
     applySettings(normSettings(S.settingsRaw));
     scheduleRender(); scheduleMirror();
@@ -3552,7 +3748,7 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-d
   function useDb(db) {
     try { if (S.unsubEv) S.unsubEv(); if (S.unsubSet) S.unsubSet(); } catch (e) { /* уже отписаны */ }
     S.unsubEv = S.unsubSet = null;
-    S.db = db; S.loaded = false; S.everSynced = false; S.fromCache = false; S.pendingSnap = false;
+    S.db = db; S.loaded = false; S.everSynced = false; S.fromCache = false; S.pendingSnap = false; S.baseMirror = null;
     S.syncErr = null; S.resubTries = 0;
     subscribe(); setSync(); render();
   }
@@ -3601,6 +3797,26 @@ fieldset { margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-d
     if (window.kpTermIntro) toast('Включена тема «Ночной терминал». Сменить оформление можно кнопкой вверху.');
   }
   boot();
+
+  /* работа без интернета: sw.js сохраняет страницу, темы, шрифты и библиотеку синхронизации */
+  if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
+    window.addEventListener('load', function () {
+      var first = !navigator.serviceWorker.controller;
+      navigator.serviceWorker.register('sw.js').then(function () { return navigator.serviceWorker.ready; }).then(function (reg) {
+        function share() {
+          var re = /^https:\/\/(fonts\.googleapis\.com|fonts\.gstatic\.com|www\.gstatic\.com\/firebasejs\/)/;
+          var urls = (performance.getEntriesByType ? performance.getEntriesByType('resource') : []).map(function (x) { return x.name; }).filter(function (u) { return re.test(u); });
+          if (urls.length && reg.active) reg.active.postMessage({ type: 'cache', urls: urls });
+        }
+        share(); setTimeout(share, 15000);
+        // один раз сообщаем, что всё готово (на телефоне — отдельно для значка на экране «Домой»)
+        if (first && lsGet(LS_OFFLINE) !== '1' && $toast.hidden) {
+          lsSet(LS_OFFLINE, '1');
+          toast('Готово: теперь календарь откроется и без интернета.');
+        }
+      }).catch(function () { /* без сохранения — просто работает с интернетом */ });
+    });
+  }
 })();
 </script>
 </body>

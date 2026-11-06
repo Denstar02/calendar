@@ -57,6 +57,7 @@ html:root[data-style="paper"] {
   --cat-sci: #0D7377;
   --cat-stud: #8A3BA3;
   --cat-pers: #9A5911;
+  --cat-shop: #2E7D3A;
   --cat-other: #687083;
   --font-display: "PT Serif", Georgia, "Times New Roman", serif;
   --font-ui: "Golos Text", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -123,6 +124,7 @@ html:root[data-style="paper"] {
     --cat-sci: #5CCFCB;
     --cat-stud: #D29AEA;
     --cat-pers: #EFB26B;
+    --cat-shop: #7FD891;
     --cat-other: #A2ACA6;
     --grid: rgba(232, 240, 233, 0.045);
     --note: rgba(255, 226, 120, 0.15);
@@ -183,6 +185,7 @@ html:root[data-style="paper"][data-theme="dark"] {
   --cat-sci: #5CCFCB;
   --cat-stud: #D29AEA;
   --cat-pers: #EFB26B;
+  --cat-shop: #7FD891;
   --cat-other: #A2ACA6;
   --grid: rgba(232, 240, 233, 0.045);
   --note: rgba(255, 226, 120, 0.15);

@@ -59,6 +59,7 @@ html:root[data-style="term"] {
   --cat-sci: #6B3F00;
   --cat-stud: #6B3F00;
   --cat-pers: #6B3F00;
+  --cat-shop: #6B3F00;
   --cat-other: #74603F;
   --glow: none;
   --title-glow: none;
@@ -130,6 +131,7 @@ html:root[data-style="term"] {
     --cat-sci: #EBC27E;
     --cat-stud: #EBC27E;
     --cat-pers: #EBC27E;
+    --cat-shop: #EBC27E;
     --cat-other: #CDA66A;
     --title-glow: 0 0 6px rgba(235, 180, 90, 0.4);
     --live-shadow: 0 0 0 1px var(--pen), 0 0 14px rgba(242, 180, 80, 0.28);
@@ -197,6 +199,7 @@ html:root[data-style="term"][data-theme="dark"] {
   --cat-sci: #EBC27E;
   --cat-stud: #EBC27E;
   --cat-pers: #EBC27E;
+  --cat-shop: #EBC27E;
   --cat-other: #CDA66A;
   --title-glow: 0 0 6px rgba(235, 180, 90, 0.4);
   --live-shadow: 0 0 0 1px var(--pen), 0 0 14px rgba(242, 180, 80, 0.28);
